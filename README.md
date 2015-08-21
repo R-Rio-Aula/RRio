@@ -16,3 +16,5 @@ Topics covered will include:
 The workshop will include teaching sessions as well as interactive sessions in which participants may practice applying methods to their own data or to sample datasets.  Thus, it would be beneficial for participants to bring data they are currently analyzing.
 
 As a prerequisite for the workshop, all participants should create a GitHub profile (github.com) if needed, and install Git on their computers.  This will allow us to immediately start sharing course notes at the start of the workshop.  Furthermore, all participants should install the most recent versions of R and RStudio on their computers if needed.
+
+## Syllabus
