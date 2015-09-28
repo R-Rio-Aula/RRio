@@ -190,10 +190,7 @@ of the gapminder dataset.
 To clean this figure up for a publication we need to change some of the text
 elements.
 
-We can do this by adding a couple of different layers. The **theme** layer
-controls the axis text, and overall text size, and there are special layers
-for changing the axis labels. To change the legend title, we need to use the
-**scales** layer.
+We can do this by adding a couple of different layers.
 
 ```{r theme}
 ggplot(data = gapminder2, aes(x = lifeExp, y = gdpPercap)) +
