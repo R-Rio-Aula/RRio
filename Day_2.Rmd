@@ -228,13 +228,27 @@ Talk about:
 
 ### Create a new column
 
-#### Create a new column using data from the other columns
+You can add a column to a data frame using the `$` that we used for subsetting.
 
-You can repeat a process on every row in a data frame.
+```{r}
+iris$Family <- "Iridaceae"
+```
+
+What if we want to add a column based on values in the other column?
+
+For example, we may want to know the area of iris petals using their length and width.
+
+You can repeat a process on every row in a data frame.  This time you must tell R that you are using values from within the data.frame.
 
 ```{r petal_area}
 iris$Petal.Area <- iris$Petal.Length * iris$Petal.Width
 head(iris)
+```
+
+This code can be simplified a little with the `with` command:
+
+```{r with}
+iris$Petal.Area <- with(iris, Petal.Length * Petal.Width)
 ```
 
 Do a gapminder project that somewhat resembles something you might actually want to do
