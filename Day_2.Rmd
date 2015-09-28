@@ -56,6 +56,13 @@ By itself, the call to `ggplot` isn't enough to draw a figure:
 > column. What trends do you see in the data? Are they what you expected?
 >
 
+```{r lifeExp-vs-gdpPercap-scatter, message=FALSE}
+library(ggplot2)
+ggplot(data = gapminder, aes(x = lifeExp, y = gdpPercap, color = continent)) +
+  geom_point()
+```
+
+
 ### Layers
 
 Using a scatterplot probably isn't the best for visualising change over time.
