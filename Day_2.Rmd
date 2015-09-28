@@ -11,6 +11,14 @@ source("../r-novice-gapminder-1/tools/chunk-options.R")
 gapminder <- read.csv("../r-novice-gapminder-1/data/gapminder-FiveYearData.csv", header=TRUE)
 ```
 
+## What we will do today [Andrew]
+
+* A quick review of subsetting
+* A more extensive review of plots
+* Learning how to manipulate data frames
+* Functions
+* Saving plots and data
+
 ## Organization [Andrew]
 
 Create a folder for `data`, `cleaned_data`, `scripts`, `figures`, `manuscript`
