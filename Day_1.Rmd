@@ -1,0 +1,2055 @@
+---
+layout: page
+title: R for reproducible scientific analysis
+subtitle: Introduction to R and RStudio
+minutes: 45
+---
+
+```{r, include=FALSE}
+source("../r-novice-gapminder-1/tools/chunk-options.R")
+```
+
+```{r load_gapminder, include=FALSE}
+source("../r-novice-gapminder-1/tools/chunk-options.R")
+# Silently load in the data so the rest of the lesson works
+gapminder <- read.csv("../r-novice-gapminder-1/data/gapminder-FiveYearData.csv", header=TRUE)
+```
+
+
+### Introduction to RStudio [Andrew]
+
+* Introduce ourselves
+* Ask how many people have experience with R
+* Make sure everyone has RStudio setup
+* Check installation of `ggplot2` and `gapminder`
+
+Today we will learn about:
+
+* Introduction to R Studio
+* Introduction to R
+* Reading data into R
+* Creating plots
+
+**Basic layout of R Studio**
+
+When you first open RStudio, you will be greeted by three panels:
+
+  * The interactive R console (entire left)
+  * Workspace/History (tabbed in upper right)
+  * Files/Plots/Packages/Help (tabbed in lower right)
+
+Once you open files, such as R scripts, a scripting panel will also open in the top left.
+
+#### Work flow within Rstudio
+Start writing in an .R file and use Rstudio's command / short cut to push current line, selected lines or modified lines to the interactive R console.
+
+> #### Tip: Pushing to the interactive R console {.callout}
+> To run the current line click on the `Run` button just above the file pane. Or use the short cut which can be seen
+> by hovering the mouse over the button.
+>
+> To run a block of code, select it and then `Run`. If you have modified a line
+> of code within a block of code you have just run. There is no need to reselect the section and `Run`,
+> you can use the next button along, `Re-run the previous region`. This will run the previous code block inculding
+> the modifications you have made.
+>
+
+### Introduction to R [Andrew]
+
+#### The R Console
+
+Can be a useful environment to try out ideas before adding them to an R script file. This console in RStudio is the same as the one you would get if you just typed in `R` in your commandline environment.
+
+The first thing you will see in the R interactive session is a bunch of information,
+followed by a ">" and a blinking cursor.  You type in commands, R tries to execute them, and then returns a result.
+
+#### Using R as a calculator
+
+The simplest thing you could do with R is do arithmetic:
+
+```{r}
+1 + 100
+```
+
+And R will print out the answer, with a preceding "[1]". Don't worry about this
+for now, we'll explain that later. For now think of it as indicating ouput.
+
+Just like bash, if you type in an incomplete command, R will wait for you to
+complete it:
+
+~~~ {.r}
+> 1 +
+~~~
+
+~~~ {.output}
++
+~~~
+
+Any time you hit return and the R session shows a "+" instead of a ">", it
+means it's waiting for you to complete the command. If you want to cancel
+a command you can simply hit "Esc" and RStudio will give you back the ">"
+prompt.
+
+> #### Tip: Cancelling commands {.callout}
+>
+> If you're using R from the commandline instead of from within RStudio,
+> you need to use `Ctrl+C` instead of `Esc` to cancel the command. This
+> applies to Mac users as well!
+>
+> Cancelling a command isn't just useful for killing incomplete commands:
+> you can also use it to tell R to stop running code (for example if its
+> taking much longer than you expect), or to get rid of the code you're
+> currently writing.
+>
+
+When using R as a calculator, the order of operations is the same as you
+would have learnt back in school.
+
+From highest to lowest precedence:
+
+ * Brackets: `(`, `)`
+ * Exponents: `^` or `**`
+ * Divide: `/`
+ * Multiply: `*`
+ * Add: `+`
+ * Subtract: `-`
+
+```{r}
+3 + 5 * 2
+```
+
+Use brackets (actually parentheses) to group to force the order of evaluation
+if it differs from the default, or to set your own order.
+
+```{r}
+(3 + 5) * 2
+```
+
+But this can get unwieldy when not needed:
+
+```{r, eval=FALSE}
+(3 + (5 * (2 ^ 2))) # hard to read
+3 + 5 * 2 ^ 2       # easier to read, once you know rules
+3 + 5 * (2 ^ 2)     # if you forget some rules, this might help
+```
+
+The text I've typed after each line of code is called a comment. Anything that
+follows on from the octothorpe (or hash) symbol `#` is ignored by R when it
+executes code.
+
+Really small or large numbers get a scientific notation:
+
+```{r}
+2/10000
+```
+
+Which is shorthand for "multiplied by `10^XX`". So `2e-4`
+is shorthand for `2 * 10^(-4)`.
+
+You can write numbers in scientific notation too:
+
+```{r}
+5e3  # Note the lack of minus here
+```
+
+#### Mathematical functions
+
+R has many built in mathematical functions. To call a function,
+we simply type its name, follow by and open and closing bracket.
+Anything we type inside those brackets is called the function's
+arguments:
+
+```{r}
+sin(1)  # trigonometry functions
+```
+
+```{r}
+log(1)  # natural logarithm
+```
+
+```{r}
+log10(10) # base-10 logarithm
+```
+
+```{r}
+exp(0.5) # e^(1/2)
+```
+
+Don't worry about trying to remember every function in R. You
+can simply look them up on google, or if you can remember the
+start of the function's name, use the tab completion in RStudio.
+
+This is one advantage that RStudio has over R on its own, it
+has autocompletion abilities that allow you to more easily
+look up functions, their arguments, and the values that they
+take.
+
+Typing a `?` before the name of a command will open the help page
+for that command. As well as providing a detailed description of
+the command and how it works, scrolling ot the bottom of the
+help page will usually show a collection of code examples which
+illustrate command usage. We'll go through an example later.
+
+#### Comparing things
+
+We can also do comparison in R:
+
+```{r}
+1 == 1  # equality (note two equals signs, read as "is equal to")
+```
+
+```{r}
+1 != 2  # inequality (read as "is not equal to")
+```
+
+```{r}
+1 <  2  # less than
+```
+
+```{r}
+1 <= 1  # less than or equal to
+```
+
+```{r}
+1 > 0  # greater than
+```
+
+```{r}
+1 >= -9 # greater than or equal to
+```
+
+> #### Tip: Comparing Numbers {.callout}
+>
+> A word of warning about comparing numbers: you should
+> never use `==` to compare two numbers unless they are
+> integers (a data type which can specifically represent
+> only whole numbers).
+>
+> Computers may only represent decimal numbers with a
+> certain degree of precision, so two numbers which look
+> the same when printed out by R, may actually have
+> different underlying representations and therefore be
+> different by a small margin of error (called Machine
+> numeric tolerance).
+>
+> Instead you should use the `all.equal` function.
+>
+> Further reading: [http://floating-point-gui.de/](http://floating-point-gui.de/)
+>
+
+#### Variables and assignment
+
+We can store values in variables using the assignment operator `<-`, like this:
+
+```{r}
+x <- 1/40
+```
+
+Notice that assignment does not print a value. Instead, we stored it for later
+in something called a **variable**. `x` now contains the **value** `0.025`:
+
+```{r}
+x
+```
+
+More precisely, the stored value is a *decimal approximation* of
+this fraction called a [floating point number](http://en.wikipedia.org/wiki/Floating_point).
+
+Look for the `Environment` tab in one of the panes of RStudio, and you will see that `x` and its value
+have appeared. Our variable `x` can be used in place of a number in any calculation that expects a number:
+
+```{r}
+log(x)
+```
+
+Notice also that variables can be reassigned:
+
+```{r}
+x <- 100
+```
+
+`x` used to contain the value 0.025 and and now it has the value 100.
+
+Variable names can contain letters, numbers, underscores and periods. They
+cannot start with a number nor contain spaces at all. Different people use
+different conventions for long variable names, these include
+
+  * periods.between.words
+  * underscores\_between_words
+  * camelCaseToSeparateWords
+
+You can use tab completion.
+
+What you use is up to you, but **be consistent**.
+
+Variable names should be informative.
+
+> #### Tip: Warnings vs. Errors {.callout}
+>
+> Pay attention when R does something unexpected! Errors, like above,
+> are thrown when R cannot proceed with a calculation. Warnings on the
+> other hand usually mean that the function has run, but it probably
+> hasn't worked as expected.
+>
+> In both cases, the message that R prints out usually give you clues
+> how to fix a problem.
+>
+
+#### Comparing things redux
+
+Show that you can compare a variable to a number
+
+> #### Challenge 1 {.challenge}
+>
+> Run the code below, and write a command to
+> compare mass to age. Is mass larger than age?
+>
+> ```{r, eval=FALSE}
+> mass <- 47.5
+> age <- 122
+> mass <- mass * 2.3
+> age <- age - 20
+> ```
+>
+
+### Project Layout [Andrew]
+
+The scientific process is naturally incremental, and many projects
+start life as random notes, some code, then a manuscript, and
+eventually everything is a bit mixed together.
+
+Most people tend to organize their projects like this:
+
+![](../r-novice-gapminder-1/fig/bad_layout.png)
+
+There are many reasons why we should *ALWAYS* avoid this:
+
+1. It is really hard to tell which version of your data is
+the original and which is the modified;
+2. It gets really messy because it mixes files with various
+extensions together;
+3. It probably takes you a lot of time to actually find
+things, and relate the correct figures to the exact code
+that has been used to generate it;
+
+A good project layout will ultimately make your life easier:
+
+* It will help ensure the integrity of your data;
+* It makes it simpler to share your code with someone else
+(a lab-mate, collaborator, or supervisor);
+* It allows you to easily upload your code with your manuscript submission;
+* It makes it easier to pick the project back up after a break.
+
+### A possible solution
+
+Fortunately, there are tools and packages which can help you manage your work effectively.
+
+One of the most powerful and useful aspects of RStudio is its project management
+functionality. We'll be using this today to create a self-contained, reproducible
+project.
+
+
+> #### Challenge: Creating a self-contained project {.challenge}
+>
+> We're going to create a new project in RStudio:
+>
+> 1. Click the "File" menu button, then "New Project".
+> 2. Click "New Directory".
+> 3. Click "Empty Project".
+> 4. Type in the name of the directory to store your project, e.g. "my_project".
+> 5. Make sure that the checkbox for "Create a git repository" is selected.
+> 6. Click the "Create Project" button.
+>
+
+Now when we start R in this project directory, or open this project with RStudio,
+all of our work on this project will be entirely self-contained in this directory.
+
+### Best practices for project organisation
+
+Although there is no "best" way to lay out a project, there are some general
+principles to adhere to that will make project management easier:
+
+#### Treat data as read only
+
+This is probably the most important goal of setting up a project. Data is
+typically time consuming and/or expensive to collect. Working with them
+interactively (e.g., in Excel) where they can be modified means you are never
+sure of where the data came from, or how it has been modified since collection.
+It is therefore a good idea to treat your data as "read-only".
+
+#### Data Cleaning
+
+In many cases your data will be "dirty": it will need significant preprocessing
+to get into a format R (or any other programming language) will find useful. This
+task is sometimes called "data munging". I find it useful to store these scripts
+in a separate folder, and create a second "read-only" data folder to hold the
+"cleaned" data sets.
+
+#### Treat generated output as disposable
+
+Anything generated by your scripts should be treated as disposable: it should
+all be able to be regenerated from your scripts.
+
+There are lots of different was to manage this output. I find it useful to
+have an output folder with different sub-directories for each separate
+analysis. This makes it easier later, as many of my analyses are exploratory
+and don't end up being used in the final project, and some of the analyses
+get shared between projects.
+
+> #### Tip: ProjectTemplate - a possible solution {.callout}
+>
+> One way to automate the management of projects is to install the third-party package, `ProjectTemplate`.
+> This package will set up an ideal directory structure for project management.
+> This is very useful as it enables you to have your analysis pipeline/workflow organised and structured.
+> Together with the default RStudio project functionality and Git you will be able to keep track of your
+> work as well as be able to share your work with collaborators.
+>
+> 1. Install `ProjectTemplate`.
+> 2. Load the library
+> 3. Initialise the project:
+>
+> ```{r, eval=FALSE}
+> install.packages("ProjectTemplate")
+> library(ProjectTemplate)
+> create.project("../my_project", merge.strategy = "allow.non.conflict")
+> ```
+>
+> For more information on ProjectTemplate and its functionality visit the
+> home page [ProjectTemplate](http://projecttemplate.net/index.html)
+>
+
+#### Separate function definition and application
+
+The most effective way I find to work in R, is to play around in the interactive
+session, then copy commands across to a script file when I'm sure they work and
+do what I want. You can also save all the commands you've entered using the
+`history` command, but I don't find it useful because when I'm typing its 90%
+trial and error.
+
+When your project is new and shiny, the script file usually contains many lines
+of directly executed code. As it matures, reusable chunks get pulled into their
+own functions. It's a good idea to separate these into separate folders; one
+to store useful functions that you'll reuse across analyses and projects, and
+one to store the analysis scripts.
+
+> #### Tip: avoiding duplication {.callout}
+>
+> You may find yourself using data or analysis scripts across several projects.
+> Typically you want to avoid duplication to save space and avoid having to
+> make updates to code in multiple places.
+>
+> In this case I find it useful to make "symbolic links", which are essentially
+> shortcuts to files somewhere else on a filesystem. On Linux and OS X you can
+> use the `ln -s` command, and on windows you can either create a shortcut or
+> use the `mklink` command from the windows terminal.
+>
+
+### Save the data in the data directory
+
+Now we have a good directory structure we will now place/save the data file in the `data/` directory.
+
+> #### Challenge 1 {.challenge}
+> Download the gapminder data from [here](https://github.com/resbaz/r-novice-gapminder-files).
+>
+> 1. Use the `Download ZIP` located on the right hand side menu, last option. To download the `.zip` file to
+> your downloads folder.
+> 2. Unzip the file.
+> 3. Create a data directory within your project
+> 4. Move the file to the `data/` within your project.
+>
+> We will load and inspect these data later.
+
+#### Version Control
+
+We also set up our project to integrate with git, putting it under version control.
+RStudio has a nicer interface to git than shell, but is very limited in what it can
+do, so you will find yourself occasionally needing to use the shell. Let's go
+through and make an initial commit of our template files.
+
+The workspace/history pane has a tab for "Git". We can stage each file by checking the box:
+you will see a Green "A" next to stage files and folders, and yellow question marks next to
+files or folders git doesn't know about yet. RStudio also nicely shows you the difference
+between files from different commits.
+
+> #### Tip: versioning disposable output {.callout}
+>
+> Generally you do not want to version disposable output (or read-only data).
+> You should modify the `.gitignore` file to tell git to ignore these files
+> and directories.
+>
+
+> #### Challenge 2 {.challenge}
+>
+> 1. Create a directory within your project called `graphs`.
+> 2. Modify the `.gitignore` file to contain `graphs/`
+> so that this disposable output isn't versioned.
+>
+> Add the newly created folders to version control using
+> the git interface.
+>
+>
+
+### Data Types [Alathea]
+
+R has 5 basic atomic types (meaning they can't be broken down into anything smaller):
+
+* logical (e.g., `TRUE`, `FALSE`)
+* numeric
+  * integer (e.g, `2L`, `as.integer(3)`)
+  * decimal ("double")
+* complex (i.e. complex numbers) (e.g, `1 + 0i`, `1 + 4i`)
+* text ("character") (e.g, `"a"`, `"swc"`, `'This is a cat'`)
+
+The default numeric type is "double" so you have to convert specifically to integer if you want integers.  Integers take up less space.
+
+We can store any of these data types inside a variable (give examples).
+
+If you aren't sure what data type you have, there are several functions you can use to find out:
+
+```{r, eval=FALSE}
+typeof() # what is its atomic type?
+is.logical() # is it TRUE/FALSE data?
+is.numeric() # is it numeric?
+is.integer() # is it an integer?
+is.complex() # is it complex number data?
+is.character() # is it character data?
+```
+
+> #### Challenge 1: Data types {.challenge}
+>
+> Use your knowledge of how to assign a value to
+> a variable, to create examples of data with the
+> following characteristics:
+>
+> 1) Variable name: 'answer', Type: logical
+> 2) Variable name: 'height', Type: numeric
+> 3) Variable name: 'dog_name', Type: character
+>
+> For each variable you've created, test that it
+> has the data type you intended. Do you find
+> anything unexpected?
+>
+
+### Data Structures [Alathea]
+
+Andrew talked about working with a single number.  What if you have more than one?  A variable that can hold more than one item is called a data structure.
+
+There are five data structures you will commonly encounter in R. These are:
+
+* vector
+* factor
+* list
+* matrix
+* data.frame
+
+For now, let's focus on vectors in more detail, to discover more about data types.
+
+#### Vectors
+
+You can imagine a vector as a long list of data separated by commas.  It is the most important data type because all other types are based on vectors. Importantly, they can only contain one data type.
+
+A vector can contain any of the five types we introduced before:
+
+* logical (e.g., `TRUE`, `FALSE`)
+* integer (e.g., `2L`, `as.integer(3)`)
+* numeric (real or decimal) (e.g, `2`, `2.0`, `pi`)
+* complex (e.g, `1 + 0i`, `1 + 4i`)
+* character (e.g, `"a"`, `"swc"`)
+
+Create an empty vector with `vector()` or by using the concatenate
+function, `c()`.
+
+```{r}
+x <- vector()
+x
+```
+
+So by default, it creates an empty vector (i.e. a length of 0) of type "logical".
+
+```{r}
+x <- vector(length = 10) # with a predefined length
+x
+```
+
+If we count the number of FALSEs there should be 10.
+
+```{r}
+x <- vector("character", length = 10)  # with a predefined length and type
+x
+```
+
+Or we can use the concatenate function to combine any values we like into
+a vector (so long as they're the same atomic type!).
+
+```{r}
+x <- c(10, 12, 45, 33)
+x
+```
+
+You can also create vectors as sequence of numbers
+
+```{r}
+series <- 1:10
+series
+```
+
+```{r}
+seq(10)
+```
+
+```{r}
+seq(1, 10, by = 0.1)
+```
+
+You can also use the concatenate function to add elements to a vector:
+
+```{r}
+x <- c(x, 57)
+x
+```
+
+If you combine multiple types, R will convert to the simplest type.
+
+This is called implicit coercion.
+
+The coercion rule goes `logical` -> `integer` -> `numeric` -> `complex` ->
+`character`.
+
+You can also coerce vectors explicitly using the `as.<class_name>`. Example
+
+```{r}
+as.numeric()
+as.character()
+```
+
+R will try to do whatever makes the most sense for that value:
+
+```{r}
+as.character(x)
+```
+
+```{r}
+as.complex(x)
+```
+
+```{r}
+x <- 0:6
+as.logical(x)
+```
+
+This is behaviour you will find in many programming languages. 0 is
+FALSE, while every other number is treated as TRUE.
+Sometimes coercions, especially nonsensical ones won't work.
+
+In some cases, R won't be able to do anything sensible:
+
+```{r}
+x <- c("a", "b", "c")
+as.numeric(x)
+as.logical(x)
+```
+
+In both cases, a vector of "NAs" was returned, and in the first case
+so was a warning.
+
+> #### Tip: Special Objects {.callout}
+>
+> "NA" is a special object in R which denotes a missing value. NA can
+> occur in any type of vector. There are a few other types of
+> special objects: `Inf` denotes infinity (can be positive or negative),
+> while `NaN` means Not a number, an undefined value (i.e. `0/0`).
+> `NULL` denotes that the data structure doesn't exist (but can occur
+> in list elements).
+>
+
+You can ask questions about the structure of vectors:
+
+```{r}
+x <- 0:10
+tail(x, n=2) # get the last 'n' elements
+```
+
+```{r}
+head(x, n=1) # get the first 'n' elements
+```
+
+```{r}
+length(x)
+```
+
+```{r}
+str(x)
+```
+
+Vectors can be named:
+
+```{r}
+x <- 1:4
+names(x) <- c("a", "b", "c", "d")
+x
+```
+
+
+#### Matrices
+
+Another data structure you'll likely encounter are matrices. Underneath the
+hood, they are really just atomic vectors, with added dimension attributes.
+
+We can create one with the `matrix` function. Let's generate some random data:
+
+```{r}
+set.seed(1) # make sure the random numbers are the same for each run
+x <- matrix(rnorm(18), ncol=6, nrow=3)
+x
+```
+
+```{r}
+str(x)
+```
+
+You can use `rownames`, `colnames`, and `dimnames` to set or
+retrieve the column and rownames of a matrix. The functions `nrow` and `ncol`
+will tell you the number of rows and columns (this also applies to data frames!),
+while `length` will tell you the number of elements.
+
+>
+> #### Challenge 3 {.challenge}
+>
+> What do you think will be the result of
+> `length(x)`?
+> Try it.
+> Were you right? Why / why not?
+>
+
+>
+> #### Challenge 4 {.challenge}
+>
+> Make another matrix, this time containing the numbers 1:50,
+> with 5 columns and 10 rows.
+> Did the `matrix` function fill your matrix by column, or by
+> row, as its default behaviour?
+> See if you can figure out how to change this.
+> (hint: read the documentation for `matrix`!)
+>
+
+#### Factors
+
+Factors are special vectors that represent categorical data. Factors can be
+ordered or unordered and are important when for modeling functions such as
+`aov()`, `lm()` and `glm()` and also in plot methods.
+
+Factors can only contain predefined values, and we can create one with the
+`factor` function:
+
+```{r}
+x <- factor(c("yes", "no", "no", "yes", "yes"))
+x
+```
+
+So we can see that the output is very similar to a character vector, but with an
+attached levels component. This becomes clearer when we look at its structure:
+
+```{r}
+str(x)
+```
+
+This reveals something important: while factors look (and often behave) like
+character vectors, they are actually integers under the hood, and here, we can
+see that "no" is represented by a 1, and "yes" a 2.
+
+In modeling functions, important to know what baseline levels is.  This is the
+first factor but by default the ordering is determined by alphabetical order of
+words entered. You can change this by specifying the levels:
+
+```{r}
+x <- factor(c("case", "control", "control", "case"), levels = c("control", "case"))
+str(x)
+```
+
+In this case, we've explicitly told R that "control" should represented by 1, and
+"case" by 2. This designation can be very important for interpreting the
+results of statistical models!
+
+#### Lists
+
+If you want to combine different types of data, you will need to use lists.
+Lists act as containers, and can contain any type of data structure, even
+themselves!
+
+Lists can be created using `list` or coerced from other objects using `as.list()`:
+
+```{r}
+x <- list(1, "a", TRUE, 1+4i)
+x
+```
+
+Each element of the list is denoted by a `[[` in the output. Inside
+each list element is an atomic vector of length one containing
+
+Lists can contain more complex objects:
+
+```{r}
+xlist <- list(a = "Research Bazaar", b = 1:10, data = head(iris))
+xlist
+```
+
+In this case our list contains a character vector of length one,
+a numeric vector with 10 entries, and a small data frame from
+one of R's many preloaded datasets (see `?data`). We've also given
+each list element a name, which is why you see `$a` instead of `[[1]]`.
+
+> #### Challenge 5 {.challenge}
+>
+> Create a list of length two containing a character vector for each of the 
+> sections in this part of the workshop:
+>
+> * Data types
+> * Data structures
+>
+> Populate each character vector with the names of the data types and data
+> structures we've seen so far.
+>
+
+Lists are extremely useful inside functions. You can "staple" together lots of
+different kinds of results into a single object that a function can return. In
+fact many R functions which return complex output store their results in a list.
+
+
+### Data frames
+
+Data frames are similar to matrices, except each column can be a different atomic type.
+Underneath the hood, data frames are really lists, where each element is
+an atomic vector, with the added restriction that they're all the same length.
+As you will see, if we pull out one column of a data frame, we will have a vector.
+
+Data frames can be created manually with the `data.frame` function:
+
+```{r}
+df <- data.frame(id = c('a', 'b', 'c', 'd', 'e', 'f'), x = 1:6, y = c(214:219))
+df
+```
+
+They are nice because they look just like a data table that you would store your data in.
+
+> #### Challenge: Data frames {.challenge}
+>
+> Try using the `length` function to query
+> your data frame `df`. Does it give the result
+> you expect?
+>
+
+Each column in the data frame is simply a list element, which is why when you ask for the
+`length` of the data frame, it tells you the number of columns. If you actually want
+the number of rows, you can use the `nrow` function.
+
+We can add rows or columns to a data.frame using `rbind` or `cbind` (these are
+the two-dimensional equivalents of the `c` function):
+
+```{r}
+df2 <- rbind(df, df)
+df2
+```
+
+```{r}
+df3 <- cbind(df, df)
+df3
+```
+
+> #### Challenge 1 {.challenge}
+>
+> Create a data frame that holds the following information for yourself:
+>
+> * First name
+> * Last name
+> * Age
+>
+> Then use rbind to add the same information for the people sitting near you.
+>
+> Now use cbind to add a column of logicals answering the question,
+> "Is there anything in this workshop you're finding confusing?"
+>
+
+### Subsetting [Alathea]
+
+R has many powerful subset operators and mastering them will allow you to
+easily perform complex operations on any kind of dataset.
+
+There are six different ways we can subset any kind of object, and three
+different subsetting operators for the different data structures.
+
+Let's start with the workhorse of R: atomic vectors.
+
+```{r}
+x <- c(5.4, 6.2, 7.1, 4.8, 7.5)
+names(x) <- c('a', 'b', 'c', 'd', 'e')
+x
+```
+
+So now that we've created a dummy vector to play with, how do we get at its
+contents?
+
+### Accessing elements using their indices
+
+To extract elements of a vector we can give their corresponding index, starting
+from one:
+
+```{r}
+x[1]
+```
+
+```{r}
+x[4]
+```
+
+The square brackets operator is just like any other function. For atomic vectors
+(and matrices), it means "get me the nth element".
+
+We can ask for multiple elements at once:
+
+```{r}
+x[c(1, 3)]
+```
+
+Or slices of the vector:
+
+```{r}
+x[1:4]
+```
+
+the `:` operator just creates a sequence of numbers from the left element to the right.
+I.e. `x[1:4]` is equivalent to `x[c(1,2,3,4)]`.
+
+We can ask for the same element multiple times:
+
+```{r}
+x[c(1,1,3)]
+```
+
+If we ask for a number outside of the vector, R will return missing values:
+
+```{r}
+x[6]
+```
+
+This is a vector of length one containing an `NA`, whose name is also `NA`.
+
+If we ask for the 0th element, we get an empty vector:
+
+```{r}
+x[0]
+```
+
+But what about negative values?
+
+### Skipping and removing elements
+
+If we use a negative number, R will return every element *except* for the
+one specified:
+
+```{r}
+x[-2]
+```
+
+
+We can skip multiple elements:
+
+```{r}
+x[c(-1, -5)]  # or x[-c(1,5)]
+```
+
+> #### Tip: Order of operations {.callout}
+>
+> A common trip up for novices occurs when trying to skip
+> slices of a vector. Most people first try to negate a
+> sequence like so:
+>
+> ```{r, error=TRUE}
+> x[-1:3]
+> ```
+>
+> This gives a somewhat cryptic error:
+>
+> But remember the order of operations. `:` is really a function, so
+> what happens is it takes its first argument as -1, and second as 3,
+> so generates the sequence of numbers: `c(-1, 0, 1, 2, 3)`.
+>
+> The correct solution is to wrap that function call in brackets, so
+> that the `-` operator applies to the results:
+>
+> ```{r}
+> x[-(1:3)]
+> ```
+>
+
+To remove elements from a vector, we need to assign the results back
+into the variable:
+
+```{r}
+x <- x[-4]
+x
+```
+
+> #### Challenge 1 {.challenge}
+>
+> Given the following code:
+>
+> ```{.r}
+> x <- c(5.4, 6.2, 7.1, 4.8, 7.5)
+> names(x) <- c('a', 'b', 'c', 'd', 'e')
+> print(x)
+> ```
+>
+> 1. Come up with at least 3 different commands that will produce the following output:
+>
+> ```{.r, echo=FALSE}
+> x[2:4]
+> ```
+>
+> 2. Compare notes with your neighbour. Did you have different strategies?
+>
+
+### Subsetting by name
+
+We can extract elements by using their name, instead of index:
+
+```{r}
+x[c("a", "c")]
+```
+
+This is usually a much more reliable way to subset objects: the
+position of various elements can often change when chaining together
+subsetting operations, but the names will always remain the same!
+
+Unfortunately we can't skip or remove elements so easily.
+
+To skip (or remove) a single named element:
+
+```{r}
+x[-which(names(x) == "a")]
+```
+
+The `which` function returns the indices of all `TRUE` elements of its argument.
+Remember that expressions evaluate before being passed to functions. Let's break
+this down so that its clearer what's happening.
+
+First this happens:
+
+```{r}
+names(x) == "a"
+```
+
+The condition operator is applied to every name of the vector `x`. Only the
+first name is "a" so that element is TRUE.
+
+`which` then converts this to an index:
+
+```{r}
+which(names(x) == "a")
+```
+
+Only the first element is `TRUE`, so `which returns 1. Now that we have indices
+the skipping works because we have a negative index!
+
+Skipping multiple named indices is similar, but uses a different comparison
+operator:
+
+```{r}
+x[-which(names(x) %in% c("a", "c"))]
+```
+
+The `%in%` goes through each element of its left argument, in this case the
+names of `x`, and asks, "Does this element occur in the second argument?".
+
+> #### Tip: Getting help for operators {.callout}
+>
+> Remember you can search for help on operators by wrapping them in quotes:
+> `help("%in%")` or `?"%in%"`.
+>
+
+### Subsetting through other logical operations
+
+We can also more simply subset through logical operations:
+
+```{r}
+a <- 1:10
+b <- a > 7
+a
+b
+a[b]
+a[a > 7]
+```
+
+> #### Tip: Chaining logical operations {.callout}
+>
+> There are many situations in which you will wish to combine multiple conditions.
+> To do so several logical operations exist in R:
+>
+>  * `|` logical OR: returns `TRUE`, if either the left or right are `TRUE`.
+>  * `&` logical AND: returns `TRUE` if both the left and right are `TRUE`
+>  * `!` logical NOT: converts `TRUE` to `FALSE` and `FALSE` to `TRUE`
+>  * `&&` and `||` compare the individual elements of two vectors. Recycling rules
+>    also apply here.
+>
+
+> #### Challenge {.challenge}
+>
+> Given the following code:
+>
+> ```{r}
+> x <- c(5.4, 6.2, 7.1, 4.8, 7.5)
+> names(x) <- c('a', 'b', 'c', 'd', 'e')
+> print(x)
+> ```
+>
+> 1. Write a subsetting command to return the values in x that are greater than 4 and less than 7.
+>
+
+#### Handling special values
+
+At some point you will encounter functions in R which cannot handle missing, infinite,
+or undefined data.
+
+There are a number of special functions you can use to filter out this data:
+
+ * `is.na` will return all positions in a vector, matrix, or data.frame
+   containing `NA`.
+ * likewise, `is.nan`, and `is.infinite` will do the same for `NaN` and `Inf`.
+ * `is.finite` will return all positions in a vector, matrix, or data.frame
+   that do not contain `NA`, `NaN` or `Inf`.
+ * `na.omit` will filter out all missing values from a vector
+
+### Factor subsetting
+
+Now that we've explored the different ways to subset vectors, how
+do we subset the other data structures?
+
+Factor subsetting works the same way as vector subsetting.
+
+```{r}
+f <- factor(c("a", "a", "b", "c", "c", "d"))
+f[f == "a"]
+f[f %in% c("b", "c")]
+f[1:3]
+```
+
+An important note is that skipping elements will not remove the level
+even if no more of that category exists in the factor:
+
+```{r}
+f[-3]
+```
+
+### Matrix subsetting
+
+Matrices are also subsetted using the `[` function. In this case
+it takes two arguments: the first applying to the rows, the second
+to its columns:
+
+```{r}
+set.seed(1)
+m <- matrix(rnorm(6*4), ncol=4, nrow=6)
+m[3:4, c(3,1)]
+```
+
+You can leave the first or second arguments blank to retrieve all the
+rows or columns respectively:
+
+```{r}
+m[, c(3,4)]
+```
+
+If we only access one row or column, R will automatically convert the result
+to a vector:
+
+```{r}
+m[3,]
+```
+
+If you want to keep the output as a matrix, you need to specify a *third* argument;
+`drop = FALSE`:
+
+```{r}
+m[3, , drop=FALSE]
+```
+
+Unlike vectors, if we try to access a row or column outside of the matrix,
+R will throw an error:
+
+```{r, eval = FALSE}
+m[, c(3,6)]
+```
+
+> #### Tip: Higher dimensional arrays {.callout}
+>
+> when dealing with multi-dimensional arrays, each argument to `[`
+> corresponds to a dimension. For example, a 3D array, the first three
+> arguments correspond to the rows, columns, and depth dimension.
+>
+
+Because matrices are really just vectors underneath the hood, we can
+also subset using only one argument:
+
+```{r}
+m[5]
+```
+
+
+This usually isn't useful. However it is useful to note that matrices
+are laid out in *column-major format* by default. That is the elements of the
+vector are arranged column-wise:
+
+```{r}
+matrix(1:6, nrow=2, ncol=3)
+```
+
+Matrices can also be subsetted using their rownames and column names
+instead of their row and column indices.
+
+> #### Challenge 2 {.challenge}
+>
+> Given the following code:
+>
+> ```{r}
+> m <- matrix(1:18, nrow=3, ncol=6)
+> print(m)
+> ```
+>
+> 1. Which of the following commands will extract the values 11 and 14?
+>
+> A. `m[2,4,2,5]`
+>
+> B. `m[2:5]`
+>
+> C. `m[4:5,2]`
+>
+> D. `m[2,c(4,5)]`
+>
+
+
+### List subsetting
+
+Now we'll introduce some new subsetting operators. There are three functions
+used to subset lists. `[`, as we've seen for atomic vectors and matrices,
+as well as `[[` and `$`.
+
+Using `[` will always return a list. If you want to *subset* a list, but not
+*extract* an element, then you will likely use `[`.
+
+```{r}
+xlist <- list(a = "Software Carpentry", b = 1:10, data = head(iris))
+xlist[1]
+```
+
+This returns a *list with one element*.
+
+We can subset elements of a list exactly the same was as atomic
+vectors using `[`. Comparison operations however won't work as
+they're not recursive, they will try to condition on the data structures
+in each element of the list, not the individual elements within those
+data structures.
+
+```{r}
+xlist[1:2]
+```
+
+To extract individual elements of a list, you need to use the double-square
+bracket function: `[[`.
+
+```{r}
+xlist[[1]]
+```
+
+Notice that now the result is a vector, not a list.
+
+You can't extract more than one element at once:
+
+```{r, error=TRUE}
+xlist[[1:2]]
+```
+
+Nor use it to skip elements:
+
+```{r, error=TRUE}
+xlist[[-1]]
+```
+
+But you can use names to both subset and extract elements:
+
+```{r}
+xlist[["a"]]
+```
+
+The `$` function is a shorthand way for extracting elements by name:
+
+```{r}
+xlist$data
+```
+
+> #### Challenge 3 {.challenge}
+> Given the following list:
+>
+> ```{r, eval=FALSE}
+> xlist <- list(a = "Software Carpentry", b = 1:10, data = head(iris))
+> ```
+>
+> Using your knowledge of both list and vector subsetting, extract the number 2 from xlist. 
+> Hint: the number 2 is contained within the "b" item in the list.
+
+> #### Challenge 4 {.challenge}
+> Given a linear model:
+>
+> ```{r, eval=FALSE}
+> mod <- aov(pop ~ lifeExp, data=gapminder)
+> ```
+>
+> Extract the residual degrees of freedom (hint: `attributes()` will help you)
+>
+
+### Data frames [Andrew]
+
+Remember the data frames are lists underneath the hood, so similar rules
+apply. However they are also two dimensional objects:
+
+`[` with one argument will act the same was as for lists, where each list
+element corresponds to a column. The resulting object will be a data frame:
+
+```{r}
+head(gapminder[3])
+```
+
+Similarly, `[[` will act to extract *a single column*:
+
+```{r}
+head(gapminder[["lifeExp"]])
+```
+
+And `$` provides a convenient shorthand to extract columns by name:
+
+```{r}
+head(gapminder$year)
+```
+
+With two arguments, `[` behaves the same way as for matrices:
+
+```{r}
+gapminder[1:3,]
+```
+
+If we subset a single row, the result will be a data frame (because
+the elements are mixed types):
+
+```{r}
+gapminder[3,]
+```
+
+But for a single column the result will be a vector (this can
+be changed with the third argument, `drop = FALSE`).
+
+> #### Challenge 5 {.challenge}
+>
+> Fix each of the following common data frame subsetting errors:
+>
+> 1. Extract observations collected for the year 1957
+>
+> ```{r, eval=FALSE}
+> gapminder[gapminder$year = 1957,]
+> ```
+>
+> 2. Extract all columns except 1 through to 4
+>
+> ```{r, eval=FALSE}
+> gapminder[,-1:4]
+> ```
+>
+> 3. Extract the rows where the life expectancy is longer the 80 years
+>
+> ```{r, eval=FALSE}
+> gapminder[gapminder$lifeExp > 80]
+> ```
+>
+> 4. Extract the first row, and the fourth and fifth columns
+>   (`lifeExp` and `gdpPercap`).
+>
+> ```{r, eval=FALSE}
+> gapminder[1, 4, 5]
+> ```
+>
+> 5. Advanced: extract rows that contain information for the years 2002
+>    and 2007
+>
+> ```{r, eval=FALSE}
+> gapminder[gapminder$year == 2002 | 2007,]
+> ```
+>
+
+> #### Challenge 6 {.challenge}
+>
+> 1. Why does `gapminder[1:20]` return an error? How does it differ from `gapminder[1:20, ]`?
+>
+>
+> 2. Create a new `data.frame` called `gapminder_small` that only contains rows 1 through 9
+> and 19 through 23. You can do this in one or two steps.
+>
+
+## Challenge solutions
+
+> #### Solution to challenge 1 {.challenge}
+>
+> Given the following code:
+>
+> ```{r}
+> x <- c(5.4, 6.2, 7.1, 4.8, 7.5)
+> names(x) <- c('a', 'b', 'c', 'd', 'e')
+> print(x)
+> ```
+>
+> 1. Come up with at least 3 different commands that will produce the following output:
+>
+> ```{r, echo=FALSE}
+> x[2:4]
+> ```
+>
+> ```{r, eval=FALSE}
+> x[2:4] 
+> x[-c(1,5)]
+> x[c("b", "c", "d")]
+> x[c(2,3,4)]
+> ```
+>
+>
+
+> #### Solution to challenge 2 {.challenge}
+>
+> Given the following code:
+>
+> ```{r}
+> m <- matrix(1:18, nrow=3, ncol=6)
+> print(m)
+> ```
+>
+> 1. Which of the following commands will extract the values 11 and 14?
+>
+> A. `m[2,4,2,5]`
+>
+> B. `m[2:5]`
+>
+> C. `m[4:5,2]`
+>
+> D. `m[2,c(4,5)]`
+>
+> Answer: D
+
+> #### Solution to challenge 3 {.challenge}
+> Given the following list:
+>
+> ```{r}
+> xlist <- list(a = "Software Carpentry", b = 1:10, data = head(iris))
+> ```
+>
+> Using your knowledge of both list and vector subsetting, extract the number 2 from xlist. 
+> Hint: the number 2 is contained within the "b" item in the list.
+>
+> ```{r, eval=FALSE}
+> xlist$b[2]
+> xlist[[2]][2]
+> xlist[["b"]][2]
+> ```
+
+
+> #### Solution to challenge 4 {.challenge}
+> Given a linear model:
+>
+> ```{r}
+> mod <- aov(pop ~ lifeExp, data=gapminder)
+> ```
+>
+> Extract the residual degrees of freedom (hint: `attributes()` will help you)
+>
+> ```{r, eval=FALSE}
+> attributes(mod) ## `df.residual` is one of the names of `mod`
+> mod$df.residual
+> ```
+
+
+> #### Solution to challenge 5 {.challenge}
+>
+> Fix each of the following common data frame subsetting errors:
+>
+> 1. Extract observations collected for the year 1957
+>
+> ```{r, eval=FALSE}
+> # gapminder[gapminder$year = 1957,]
+> gapminder[gapminder$year == 1957,]
+> ```
+>
+> 2. Extract all columns except 1 through to 4
+>
+> ```{r, eval=FALSE}
+> # gapminder[,-1:4]
+> gapminder[,-c(1:4)]
+> ```
+>
+> 3. Extract the rows where the life expectancy is longer the 80 years
+>
+> ```{r, eval=FALSE}
+> # gapminder[gapminder$lifeExp > 80]
+> gapminder[gapminder$lifeExp > 80,]
+> ```
+>
+> 4. Extract the first row, and the fourth and fifth columns
+>   (`lifeExp` and `gdpPercap`).
+>
+> ```{r, eval=FALSE}
+> # gapminder[1, 4, 5]
+> gapminder[1, c(4, 5)]
+> ```
+>
+> 5. Advanced: extract rows that contain information for the years 2002
+>    and 2007
+>
+> ```{r, eval=FALSE}
+> # gapminder[gapminder$year == 2002 | 2007,]
+> gapminder[gapminder$year == 2002 | gapminder$year == 2007,]
+> gapminder[gapminder$year %in% c(2002, 2007),]
+> ```
+>
+
+> #### Solution to challenge 6 {.challenge}
+>
+> 1. Why does `gapminder[1:20]` return an error? How does it differ from `gapminder[1:20, ]`?
+>
+> Answer: `gapminder` is a data.frame so needs to be subsetted on two dimensions. `gapminder[1:20, ]` subsets the data to give the first 20 rows and all columns.
+>
+> 2. Create a new `data.frame` called `gapminder_small` that only contains rows 1 through 9
+> and 19 through 23. You can do this in one or two steps.
+>
+> ```{r}
+> gapminder_small <- gapminder[c(1:9, 19:23),]
+> ```
+>
+
+
+### Reading in data [Andrew]
+
+Remember earlier we obtained the gapminder dataset.
+If you're curious about where this data comes from you might like to
+look at the [Gapminder website](http://www.gapminder.org/data/documentation/)
+
+Now we want to load the gapminder data into R.
+
+As its file extension would suggest, the file contains comma-separated
+values, and seems to contain a header row.
+
+We can use `read.table` to read this into R. `read.table` reads a file in as a data frame.
+
+```{r gapminder}
+gapminder <- read.table(file = "../r-novice-gapminder-1/data/gapminder-FiveYearData.csv",
+                        header = TRUE, sep = ",")
+```
+
+Because we know the structure of the data, we're able to specify the appropriate arguments to `read.table`. Without these arguments, `read.table` will do its best to do something sensible, but it is always more reliable to explicitly tell `read.table` the structure
+of the data. `read.csv` function provides a convenient shortcut
+for loading in CSV files.
+
+> #### Miscellaneous Tips {.callout}
+>
+> 1. Another type of file you might encounter are tab-separated
+> format. To specify a tab as a separator, use `"\t"`.
+>
+> 2. You can also read in files from the Internet by replacing
+> the file paths with a web address.
+>
+> 3. You can read directly from excel spreadsheets without
+> converting them to plain text first by using the `xlsx` package.
+>
+
+> #### Challenge 2 {.challenge}
+>
+> Go to file -> new file -> R script, and write an R script
+> to load in the gapminder dataset. Put it in the `scripts/`
+> directory and add it to version control.
+>
+> Run the script using the `source` function, using the file path
+> as its argument (or by pressing the "source" button in RStudio).
+>
+
+### Using data frames: the `gapminder` dataset [Andrew]
+
+To recap what we've just learnt, let's have a look at our example
+data (life expectancy in various countries for various years).
+
+Remember, there are a few functions we can use to interrogate data structures in R:
+
+```{r, eval=FALSE}
+class() # what is the data structure?
+typeof() # what is its atomic type?
+length() # how long is it? What about two dimensional objects?
+attributes() # does it have any metadata?
+str() # A full summary of the entire object
+dim() # Dimensions of the object - also try nrow(), ncol()
+```
+
+Let's use them to explore the gapminder dataset.
+
+```{r}
+typeof(gapminder)
+```
+
+Remember, data frames are lists 'under the hood'.
+
+```{r}
+class(gapminder)
+```
+
+The gapminder data is stored in a "data.frame". This is the default data structure when you read
+in data, and (as we've heard) is useful for storing data with mixed types of columns.
+
+Let's look at some of the columns.
+
+> #### Challenge 3: Data types in a real dataset {.challenge}
+>
+> Look at the first 6 rows of the gapminder data frame we loaded before:
+>
+> ```{r}
+> head(gapminder)
+> ```
+>
+> Write down what data type you think is in each column
+>
+
+
+```{r}
+typeof(gapminder$year)
+typeof(gapminder$lifeExp)
+```
+
+Can anyone guess what we should expect the type of the continent column to be?
+
+```{r}
+typeof(gapminder$continent)
+```
+
+If you were expecting a the answer to be "character", you would rightly be
+surprised by the answer. Let's take a look at the class of this column:
+
+```{r}
+class(gapminder$continent)
+```
+
+One of the default behaviours of R is to treat any text columns as "factors"
+when reading in data. The reason for this is that text columns often represent
+categorical data, which need to be factors to be handled appropriately by
+the statistical modeling functions in R.
+
+However it's not obvious behaviour, and something that trips many people up. We can
+disable this behaviour and read in the data again.
+
+Remember, if you do turn it off automatic conversion to factors you will need to
+explicitly convert the variables into factors when
+running statistical models.
+This can be useful, because it forces you to think about the
+question you're asking, and makes it easier to specify the ordering of the categories.
+
+However there are many in the R community who find it more sensible to
+leave this as the default behaviour.
+
+> #### Tip: Changing options {.callout}
+>
+> When R starts, the first thing it does is runs any code in the file `.Rprofile`
+> in the project directory. Any permanent changes to default behaviour you want
+> to make should be stored in that file.
+>
+
+The first thing you should do when reading data in, is check that it matches what
+you expect, even if the command ran without warnings or errors. The `str` function,
+short for "structure", is really useful for this:
+
+```{r}
+str(gapminder)
+```
+
+We can see that the object is a `data.frame` with 1,704 observations (rows),
+and 6 variables (columns). Below that, we see the name of each column, followed
+by a ":", followed by the type of variable in that column, along with the first
+few entries.
+
+We can also retrieve or modify the column or rownames of the data.frame:
+
+```{r}
+colnames(gapminder)
+```
+
+```{r}
+rownames(gapminder)
+```
+
+See those numbers in the square brackets on the left? That tells you the
+number of the first entry in that row of output. So in the last line, we
+see that the "[1701]" element has "1701" stored in it. The rownames in
+this case are simply the row numbers.
+
+We can also modify this information:
+
+```{r}
+copy <- gapminder # lets create a copy so we don't mess up the original
+colnames(copy) <- c("a", "b", "c", "d", "e", "f")
+head(copy)
+```
+
+There are a few related ways of retrieving and modifying this information.
+`attributes` will give you both the row and column names, along with the
+class information, while `dimnames` will give you just the rownames and
+column names.
+
+In both cases, the output object is stored in a `list`:
+
+```{r}
+str(dimnames(gapminder))
+```
+
+## Understanding how lists are used in function output
+
+
+Lets run a basic linear regression on the gapminder dataset:
+
+```{r}
+# What is the relationship between life expectancy and year?
+l1 <- lm(lifeExp ~ year, data=gapminder)
+```
+
+We won't go into too much detail of what I just wrote, but briefly;
+the `~` denotes a formula, which means treat the variable on the left of the
+`~` as the left hand side of the equation (or response in this case), and
+everything on the right as the right hand side. By telling the linear
+model function to use the gapminder data frame, it knows to look for those
+variable names as its columns.
+
+Let's look at the output:
+
+```{r}
+l1
+```
+
+Not much there right? But if we look at the structure...
+
+```{r}
+str(l1)
+```
+
+There's a lot of stuff, stored in nested lists! This is why the structure
+function is really useful, it allows you to see all the data available to
+you returned by a function.
+
+For now, we can look at the `summary`:
+
+```{r}
+summary(l1)
+```
+
+As you might expect, life expectancy has slowly been increasing over
+time, so we see a significant positive association!
+
+
+### Plots [Andrew]
+
+```{r, include=FALSE}
+source("../r-novice-gapminder-1/tools/chunk-options.R")
+opts_chunk$set(fig.path = "../r-novice-gapminder-1/fig/08-plot-ggplot2-")
+# Silently load in the data so the rest of the lesson works
+gapminder <- read.csv("../r-novice-gapminder-1/data/gapminder-FiveYearData.csv", header=TRUE)
+```
+
+Plotting our data is one of the best ways to
+quickly explore it and the various relationships
+between variables.
+
+Today we'll be learning about the ggplot2 package, because
+it is the most effective for creating publication quality
+graphics.
+
+ggplot2 is built on the grammar of graphics, the idea that any plot can be
+expressed from the same set of components: a **data** set, a
+**coordinate system**, and a set of **geoms**--the visual representation of data
+points.
+
+The key to understanding ggplot2 is thinking about a figure in layers: just like
+you might do in an image editing program like Photoshop, Illustrator, or
+Inkscape.
+
+Let's start off with an example:
+
+```{r lifeExp-vs-gdpPercap-scatter, message=FALSE}
+library(ggplot2)
+ggplot(data = gapminder, aes(x = lifeExp, y = gdpPercap)) +
+  geom_point()
+```
+
+So the first thing we do is call the `ggplot` function. This function lets R
+know that we're creating a new plot, and any of the arguments we give the
+`ggplot` function are the *global* options for the plot: they apply to all
+layers on the plot.
+
+We've passed in two arguments to `ggplot`. First, we tell `ggplot` what data we
+want to show on our figure, in this example the gapminder data we read in
+earlier. For the second argument we passed in the `aes` function, which
+tells `ggplot` how variables in the **data** map to *aesthetic* properties of
+the figure, in this case the **x** and **y** locations. Here we told `ggplot` we
+want to plot the "lifeExp" column of the gapminder data frame on the x-axis, and
+the "gdpPercap" column on the y-axis. Notice that we didn't need to explicitly
+pass `aes` these columns (e.g. `x = gapminder[, "lifeExp"]`), this is because
+`ggplot` is smart enough to know to look in the **data** for that column!
+
+By itself, the call to `ggplot` isn't enough to draw a figure:
+
+We need to tell `ggplot` how we want to visually represent the data, which we
+do by adding a new **geom** layer. In our example, we used `geom_point`, which
+tells `ggplot` we want to visually represent the relationship between **x** and
+**y** as a scatterplot of points:
+
+```{r lifeExp-vs-gdpPercap-scatter2}
+ggplot(data = gapminder, aes(x = lifeExp, y = gdpPercap)) +
+  geom_point()
+```
+
+> #### Challenge 1 {.challenge}
+>
+> Modify the example so that the figure visualise how life expectancy has
+> changed over time:
+>
+> ```{r, eval=FALSE}
+> ggplot(data = gapminder, aes(x = lifeExp, y = gdpPercap)) + geom_point()
+> ```
+>
+> Hint: the gapminder dataset has a column called "year", which should appear
+> on the x-axis.
+>
+
+> #### Challenge 2 {.challenge}
+>
+> In the previous examples and challenge we've used the `aes` function to tell
+> the scatterplot **geom** about the **x** and **y** locations of each point.
+> Another *aesthetic* property we can modify is the point *color*. Modify the
+> code from the previous challenge to **color** the points by the "continent"
+> column. What trends do you see in the data? Are they what you expected?
+>
+
+### Layers
+
+Using a scatterplot probably isn't the best for visualising change over time.
+Instead, let's tell `ggplot` to visualise the data as a line plot:
+
+```{r lifeExp-line}
+ggplot(data = gapminder, aes(x=year, y=lifeExp, by=country, color=continent)) +
+  geom_line()
+```
+
+Instead of adding a `geom_point` layer, we've added a `geom_line` layer. We've
+added the **by** *aesthetic*, which tells `ggplot` to draw a line for each
+country.
+
+But what if we want to visualise both lines and points on the plot? We can
+simply add another layer to the plot:
+
+```{r lifeExp-line-point}
+ggplot(data = gapminder, aes(x=year, y=lifeExp, by=country, color=continent)) +
+  geom_line() + geom_point()
+```
+
+It's important to note that each layer is drawn on top of the previous layer. In
+this example, the points have been drawn *on top of* the lines. Here's a
+demonstration:
+
+```{r lifeExp-layer-example-1}
+ggplot(data = gapminder, aes(x=year, y=lifeExp, by=country)) +
+  geom_line(aes(color=continent)) + geom_point()
+```
+
+In this example, the *aesthetic* mapping of **color** has been moved from the
+global plot options in `ggplot` to the `geom_line` layer so it no longer applies
+to the points. Now we can clearly see that the points are drawn on top of the
+lines.
+
+> #### Challenge 3 {.challenge}
+>
+> Switch the order of the point and line layers from the previous example. What
+> happened?
+>
+
+### Transformations and statistics
+
+Ggplot also makes it easy to overlay statistical models over the data. To
+demonstrate we'll go back to our first example:
+
+```{r lifeExp-vs-gdpPercap-scatter3, message=FALSE}
+ggplot(data = gapminder, aes(x = lifeExp, y = gdpPercap, color=continent)) +
+  geom_point()
+```
+
+Currently it's hard to see the relationship between the points due to some strong
+outliers in GDP per capita. We can change the scale of units on the y axis using
+the *scale* functions. These control the mapping between the data values and
+visual values of an aesthetic.
+
+```{r axis-scale}
+ggplot(data = gapminder, aes(x = lifeExp, y = gdpPercap)) +
+  geom_point() + scale_y_log10()
+```
+
+The `log10` function applied a transformation to the values of the gdpPercap
+column before rendering them on the plot, so that each multiple of 10 now only
+corresponds to an increase in 1 on the transformed scale, e.g. a GDP per capita
+of 1,000 is now 3 on the y axis, a value of 10,000 corresponds to 4 on the y
+axis and so on. This makes it easier to visualise the spread of data on the
+y-axis.
+
+We can fit a simple relationship to the data by adding another layer,
+`geom_smooth`:
+
+```{r lm-fit}
+ggplot(data = gapminder, aes(x = lifeExp, y = gdpPercap)) +
+  geom_point() + scale_y_log10() + geom_smooth(method="lm")
+```
+
+We can make the line thicker by *setting* the **size** aesthetic in the
+`geom_smooth` layer:
+
+```{r lm-fit2}
+ggplot(data = gapminder, aes(x = lifeExp, y = gdpPercap)) +
+  geom_point() + scale_y_log10() + geom_smooth(method="lm", size=1.5)
+```
+
+There are two ways an *aesthetic* can be specified. Here we *set* the **size**
+aesthetic by passing it as an argument to `geom_smooth`. Previously in the
+lesson we've used the `aes` function to define a *mapping* between data
+variables and their visual representation.
+
+> #### Challenge 4 {.challenge}
+>
+> Modify the color and size of the points on the point layer in the previous
+> example.
+>
+> Hint: do not use the `aes` function.
+>
+
+### Multi-panel figures
+
+Earlier we visualised the change in life expectancy over time across all
+countries in one plot. Alternatively, we can split this out over multiple panels
+by adding a layer of **facet** panels:
+
+```{r facet}
+gapminder2 <- gapminder[gapminder$year > 1990,]
+
+ggplot(data = gapminder2, aes(x = lifeExp, y = gdpPercap)) +
+  geom_point() + scale_y_log10() + geom_smooth(method="lm", size=1.5) +
+  facet_wrap(~ year)
+```
+
+The `facet_wrap` layer took a "formula" as its argument, denoted by the tilde
+(~). This tells R to draw a panel for each unique value in the country column
+of the gapminder dataset.
+
+### Modifying text
+
+To clean this figure up for a publication we need to change some of the text
+elements.
+
+We can do this by adding a couple of different layers. The **theme** layer
+controls the axis text, and overall text size, and there are special layers
+for changing the axis labels. To change the legend title, we need to use the
+**scales** layer.
+
+```{r theme}
+ggplot(data = gapminder2, aes(x = lifeExp, y = gdpPercap)) +
+  geom_point() + scale_y_log10() + geom_smooth(method="lm", size=1.5) +
+  facet_wrap(~ year) +
+  xlab("Life expectancy") + ylab("GDP per capita") + ggtitle("Figure 1")
+```
+
+
+This is just a taste of what you can do with `ggplot2`. RStudio provides a
+really useful [cheat sheet][cheat] of the different layers available, and more
+extensive documentation is available on the [ggplot2 website][ggplot-doc].
+Finally, if you have no idea how to change something, a quick google search will
+usually send you to a relevant question and answer on Stack Overflow with reusable
+code to modify!
+
+[cheat]: http://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
+[ggplot-doc]: http://docs.ggplot2.org/current/
+
+
+> #### Challenge 5 {.challenge}
+>
+> Create a density plot of GDP per capita, filled by continent.
+>
+> Advanced:
+>  - Transform the x axis to better visualise the data spread.
+>  - Add a facet layer to panel the density plots by year.
+>
+
+## Challenge solutions
+
+> #### Solution to challenge 1 {.challenge}
+>
+> Modify the example so that the figure visualise how life expectancy has
+> changed over time:
+>
+> ```{r ch1-sol}
+> ggplot(data = gapminder, aes(x = year, y = lifeExp)) + geom_point()
+> ```
+>
+
+> #### Solution to challenge 2 {.challenge}
+>
+> In the previous examples and challenge we've used the `aes` function to tell
+> the scatterplot **geom** about the **x** and **y** locations of each point.
+> Another *aesthetic* property we can modify is the point *color*. Modify the
+> code from the previous challenge to **color** the points by the "continent"
+> column. What trends do you see in the data? Are they what you expected?
+>
+> ```{r ch2-sol}
+> ggplot(data = gapminder, aes(x = year, y = lifeExp, color=continent)) +
+>   geom_point()
+> ```
+>
+
+> #### Solution to challenge 3 {.challenge}
+>
+> Switch the order of the point and line layers from the previous example. What
+> happened?
+>
+> ```{r ch3-sol}
+> ggplot(data = gapminder, aes(x=year, y=lifeExp, by=country)) +
+>  geom_point() + geom_line(aes(color=continent))
+> ```
+> 
+> The lines now get drawn over the points!
+>
+
+
+> #### Solution to challenge 4 {.challenge}
+>
+> Modify the color and size of the points on the point layer in the previous
+> example.
+>
+> Hint: do not use the `aes` function.
+>
+> ```{r ch4-sol}
+> ggplot(data = gapminder, aes(x = lifeExp, y = gdpPercap)) +
+>  geom_point(size=3, color="orange") + scale_y_log10() +
+>  geom_smooth(method="lm", size=1.5)
+> ```
+>
+
+> #### Solution to challenge 5 {.challenge}
+>
+> Create a density plot of GDP per capita, filled by continent.
+>
+> Advanced:
+>  - Transform the x axis to better visualise the data spread.
+>  - Add a facet layer to panel the density plots by year.
+>
+> ```{r ch5-sol}
+> ggplot(data = gapminder, aes(x = gdpPercap, fill=continent)) +
+>  geom_density(alpha=0.6) + facet_wrap( ~ year) + scale_x_log10()
+> ```
+>
