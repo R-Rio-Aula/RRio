@@ -6,9 +6,7 @@ output: html_document
 ---
 
 ```{r load_gapminder, include=FALSE}
-source("../r-novice-gapminder-1/tools/chunk-options.R")
-# Silently load in the data so the rest of the lesson works
-gapminder <- read.csv("../r-novice-gapminder-1/data/gapminder-FiveYearData.csv", header=TRUE)
+library(gapminder)
 ```
 
 ## What we will do today [Andrew]
@@ -23,7 +21,7 @@ gapminder <- read.csv("../r-novice-gapminder-1/data/gapminder-FiveYearData.csv",
 
 Create a folder for `data`, `cleaned_data`, `scripts`, `figures`, `manuscript`
 
-## Review data frames and plotting [Alathea]
+## Review subsetting & plotting [Alathea]
 
 ### Methods of subsetting
 
@@ -366,20 +364,17 @@ Let's define two functions that will convert temperature from Fahrenheit to
 Kelvin, and Kelvin to Celsius:
 
 ```{r}
-area_circo <- function(){
-  
+area_circo <- function(radius){
+  area <- pi * radius ^ 2
+  return(area)
 }
 
-kelvin_to_celsius <- function(temp) {
-  celsius <- temp - 273.15
-  return(celsius)
-}
+
 ```
 
 > #### Challenge 2 {.challenge}
 >
-> Define the function to convert directly from Fahrenheit to Celsius,
-> by reusing the two functions above (or using your own functions if you prefer).
+> Define the function to convert directly from diameter to area
 >
 
 
