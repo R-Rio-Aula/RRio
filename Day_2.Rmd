@@ -251,7 +251,34 @@ This code can be simplified a little with the `with` command:
 iris$Petal.Area <- with(iris, Petal.Length * Petal.Width)
 ```
 
-Do a gapminder project that somewhat resembles something you might actually want to do
+### Summary Stats
+
+Another thing you may want to do with data from a data frame, is summary statistics.  For example, you could take the mean and standard deviation of petal widths:
+
+```{r mean_petal_width}
+mean_petal_width <- mean(iris$Petal.Width)
+mean_petal_width
+
+sd_petal_width <- sd(iris$Petal.Width)
+sd_petal_width
+```
+
+Using both mean and standard deviation, we can also get the coefficient of variation of petal widths (sd / mean)
+
+```{r cov_petal_width}
+cov_petal_width <- sd_petal_width/mean_petal_width
+cov_petal_width
+```
+
+Now, what if you want the coefficient of variation for other measures, such as petal length, sepal length, etc.?
+
+> #### Challenge 1 {.challenge}
+>
+> Find the coefficient of variation (standard deviation / mean) for the variable Sepal.Length
+> in the iris data set.
+>
+
+To solve the last challenge, you had to repeat the steps of taking the mean and standard deviation.  It is annoying to have to write the whole process out every time you want to know the coefficient of variation.  Wouldn't it be nice if R had a function to get this value automatically?  Luckily, you can write your own functions, which is what Andrew will talk about now!
 
 ## From plots to functions -> Project to show why you might want to have functions
 
