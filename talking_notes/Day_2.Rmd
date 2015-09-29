@@ -318,13 +318,13 @@ my_sum <- function(a, b) {
 Let’s define a function fahr_to_kelvin that converts temperatures from Fahrenheit to Kelvin:
 
 ```{r}
-fahr_to_kelvin <- function(temp) {
-  kelvin <- ((temp - 32) * (5 / 9)) + 273.15
-  return(kelvin)
+circumference_to_diameter <- function(circumference){
+  diameter <- circumference / pi
+  return(diameter)
 }
 ```
 
-We define `fahr_to_kelvin` by assigning it to the output of `function`.
+We define `circumference_to_diameter` by assigning it to the output of `function`.
 The list of argument names are contained within parentheses.
 Next, the [body](reference.html#function-body) of the function--the statements that are executed when it runs--is contained within curly braces (`{}`).
 The statements in the body are indented by two spaces.
@@ -344,21 +344,17 @@ Let's try running our function.
 Calling our own function is no different from calling any other function:
 
 ```{r}
-# freezing point of water
-fahr_to_kelvin(32)
+circumference_to_diameter(32)
 ```
 
 ```{r}
-# boiling point of water
-fahr_to_kelvin(212)
+circumference_to_diameter(3)
 ```
 
 > #### Challenge 1 {.challenge}
 >
-> Write a function called `kelvin_to_celsius` that takes a temperature in Kelvin
-> and returns that temperature in Celsius
+> Write a function called `diam_to_radius` that takes a diameter and returns a radius
 >
-> Hint: To convert from Kelvin to Celsius you minus 273.15
 >
 
 #### Combining functions
@@ -370,9 +366,8 @@ Let's define two functions that will convert temperature from Fahrenheit to
 Kelvin, and Kelvin to Celsius:
 
 ```{r}
-fahr_to_kelvin <- function(temp) {
-  kelvin <- ((temp - 32) * (5 / 9)) + 273.15
-  return(kelvin)
+area_circo <- function(){
+  
 }
 
 kelvin_to_celsius <- function(temp) {
