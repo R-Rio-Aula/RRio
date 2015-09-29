@@ -681,6 +681,8 @@ you're looping through multiple subsets of a file, plotting data from
 each subset, and you want to save each plot, but obviously can't stop
 the loop to click 'Export' for each one.
 
+Each new plot will show up as a new page before you turn off the device.
+
 In this case you can use a more flexible approach. The function
 `pdf` creates a new pdf device. You can control the size and resolution
 using the arguments to this function.
@@ -726,12 +728,7 @@ write.table(aust_subset,
 )
 ```
 
-Let's switch back to the shell to take a look at the data to make sure it looks
-OK:
-
-```{r, engine='bash'}
-head cleaned-data/gapminder-aus.csv
-```
+Now open this file in a text editor and take a look.
 
 Hmm, that's not quite what we wanted. Where did all these
 quotation marks come from? Also the row numbers are
@@ -758,11 +755,7 @@ write.table(
 )
 ```
 
-Now lets look at the data again using our shell skills:
-
-```{r, engine='bash'}
-head cleaned-data/gapminder-aus.csv
-```
+Now lets look at the data again 
 
 That looks better!
 
