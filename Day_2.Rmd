@@ -720,10 +720,12 @@ Let's create a data-cleaning script, for this analysis, we
 only want to focus on the gapminder data for Australia:
 
 ```{r}
+library(gapminder)
+
 aust_subset <- gapminder[gapminder$country == "Australia",]
 
 write.table(aust_subset,
-  file="cleaned-data/gapminder-aus.csv",
+  file="gapminder-aus.csv",
   sep=","
 )
 ```
@@ -750,7 +752,7 @@ Let's fix this:
 ```{r}
 write.table(
   gapminder[gapminder$country == "Australia",],
-  file="cleaned-data/gapminder-aus.csv",
+  file="gapminder-aus.csv",
   sep=",", quote=FALSE, row.names=FALSE
 )
 ```
