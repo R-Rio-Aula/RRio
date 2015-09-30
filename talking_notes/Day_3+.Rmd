@@ -12,11 +12,19 @@ library(ggplot2)
 
 This is a tentative outline of the remaining sections
 
-## Git / Github
+## Git / Github [Andrew]
 
 ### Explain Git and Github
 
+* Git is a version control software for keeping track of changes made to your documents and allowing you to go to earlier versions of them
+* Git removes the need for scripts labeled `model1`, `model2`, and so on...
+* Github is a website that provides an interface for Git so that you can share and collaborate on projects
+
+Once we have Git working on everyone's computers, we will be able to share the course notes together
+
 ### Install Git
+
+### Connect Git to RStudio
 
 ### Create Github accounts
 
@@ -27,6 +35,10 @@ This is a tentative outline of the remaining sections
 ### Push and pull things
 
 ### Collaboration? e.g. send pull requests, open issues, etc.
+
+## Review exercise
+
+Something using functions and plots
 
 ## Control flow
 
@@ -281,6 +293,8 @@ output_vector2
 > tests whether the country starts with a 'B', and graphs life expectancy
 > against time as a line graph if the mean life expectancy is under 50 years.
 >
+
+## Refresh on packages: what they are and how to install them
 
 ## plyr
 
