@@ -705,6 +705,8 @@ There and back again!
 
 ## Review exercise
 
-Suppose you want to know 
+1.  Install the package `rebird` using the command `install.packages("rebird")`
 
-Something using functions and plots
+2.  Load the `rebird` package using `library`
+
+3.  Obtain a dataset containing bird sitings in Rio de Janeiro, Brasil using the command `bird_data <- ebirdregion("BR-RJ")`
