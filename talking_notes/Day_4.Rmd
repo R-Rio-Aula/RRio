@@ -705,8 +705,8 @@ There and back again!
 
 ## Review exercise
 
-1.  Install the package `rebird` using the command `install.packages("rebird")`
+1.  Write a function to perform a calculation on some data
 
-2.  Load the `rebird` package using `library`
+2.  Use `dplyr` to apply the function over the data frame
 
-3.  Obtain a dataset containing bird sitings in Rio de Janeiro, Brasil using the command `bird_data <- ebirdregion("BR-RJ")`
+3.  Create a plot
