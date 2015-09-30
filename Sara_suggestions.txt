@@ -1,0 +1,10 @@
+Hi,
+
+My suggestions are work on some multivariate analyses like PCA PCoA RDA.
+Give an example of statistics analyses with a not normally distributed data.
+How to edit or modify graphs inside an already written function.
+How to order datasets to different types of statistic analyses.
+
+And let it free for questions on the road :)
+
+
