@@ -705,8 +705,10 @@ There and back again!
 
 ## Review exercise
 
-1.  Write a function to perform a calculation on some data
+1.  Clean up some data
 
-2.  Use `dplyr` to apply the function over the data frame
+2.  Write a function to perform a calculation on some data
 
-3.  Create a plot
+3.  Use `dplyr` to apply the function over the data frame
+
+4.  Create a plot
