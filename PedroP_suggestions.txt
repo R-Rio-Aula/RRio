@@ -1,0 +1,3 @@
+Suggetions
+
+Working with GLM analyses, maybe more about graphics, something about package development.
