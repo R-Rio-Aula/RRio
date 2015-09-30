@@ -26,6 +26,8 @@ Once we have Git working on everyone's computers, we will be able to share the c
 
 ### Connect Git to RStudio
 
+http://www.molecularecologist.com/2013/11/using-github-with-r-and-rstudio/
+
 ### Create Github accounts
 
 ### Create a Github repository
@@ -36,11 +38,13 @@ Once we have Git working on everyone's computers, we will be able to share the c
 
 ### Collaboration? e.g. send pull requests, open issues, etc.
 
-## Review exercise
+## Review exercise (end of Git class if there is time)
+
+Suppose you want to know 
 
 Something using functions and plots
 
-## Control flow
+## Control flow (day 4)
 
 Often when we're coding we want to control the flow of our actions. This can be done
 by setting actions to occur only if a condition or a set of conditions are met.
