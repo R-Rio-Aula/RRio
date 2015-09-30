@@ -1,0 +1,1417 @@
+---
+title: "Day 4"
+output: html_document
+---
+
+## Review exercise (end of Git class if there is time)
+
+Suppose you want to know 
+
+Something using functions and plots
+
+## Control flow (day 4)
+
+Often when we're coding we want to control the flow of our actions. This can be done
+by setting actions to occur only if a condition or a set of conditions are met.
+Alternatively, we can also set an action to occur a particular number of times.
+
+There are several ways you can control flow in R.
+For conditional statements, the most commonly used approaches are the constructs:
+
+```{r, eval=FALSE}
+# if
+if (condition is true) {
+  perform action
+}
+
+# if ... else
+if (condition is true) {
+  perform action
+} else {  # that is, if the condition is false,
+  perform alternative action
+}
+```
+
+Say, for example, that we want R to print a message if a variable `x` has a particular value:
+
+```{r}
+# sample a random number from a Poisson distribution
+# with a mean (lambda) of 8
+
+x <- rpois(1, lambda=8)
+
+if (x >= 10) {
+  print("x is greater than or equal to 10")
+}
+
+x
+```
+
+Note you may not get the same output as your neighbour because
+you may be sampling different random numbers from the same distribution.
+
+Let's set a seed so that we all generate the same 'pseudo-random'
+number, and then print more information:
+
+```{r}
+x <- rpois(1, lambda=8)
+
+if (x >= 10) {
+  print("x is greater than or equal to 10")
+} else if (x > 5) {
+  print("x is greater than 5")
+} else {
+  print("x is less than 5")
+}
+```
+
+> #### Tip: pseudo-random numbers {.callout}
+>
+> In the above case, the function `rpois` generates a random number following a
+> Poisson distribution with a mean (i.e. lambda) of 8. The function `set.seed`
+> guarantees that all machines will generate the exact same 'pseudo-random'
+> number ([more about pseudo-random numbers](http://en.wikibooks.org/wiki/R_Programming/Random_Number_Generation)).
+> So if we `set.seed(10)`, we see that `x` takes the value 8. You should get the
+> exact same number.
+>
+
+**Important:** when R evaluates the condition inside `if` statements, it is
+looking for a logical element, i.e., `TRUE` or `FALSE`. This can cause some
+headaches for beginners. For example:
+
+```{r}
+x  <-  4 == 3
+if (x) {
+  "4 equals 3"
+}
+```
+
+As we can see, the message was not printed because the vector x is `FALSE`
+
+```{r}
+x <- 4 == 3
+x
+```
+
+> #### Challenge 1 {.challenge}
+>
+> Use an `if` statement to print a suitable message
+> reporting whether there are any records from 2002 in
+> the `gapminder` dataset.
+> Now do the same for 2012.
+>
+
+Did anyone get a warning message like this?
+
+```{r, echo=FALSE}
+if (gapminder$year == 2012) {}
+```
+
+If your condition evaluates to a vector with more than one logical element,
+the function `if` will still run, but will only evaluate the condition in the first
+element. Here you need to make sure your condition is of length 1.
+
+> #### Tip: `any` and `all` {.callout}
+> The `any` function will return TRUE if at least one
+> TRUE value is found within a vector, otherwise it will return `FALSE`.
+> This can be used in a similar way to the `%in%` operator.
+> The function `all`, as the name suggests, will only return `TRUE` if all values in
+> the vector are `TRUE`.
+>
+
+### Repeating operations
+
+If you want to iterate over
+a set of values, when the order of iteration is important, and perform the
+same operation on each, a `for` loop will do the job.
+We saw `for` loops in the shell lessons earlier. This is the most
+flexible of looping operations, but therefore also the hardest to use
+correctly. Avoid using `for` loops unless the order of iteration is important:
+i.e. the calculation at each iteration depends on the results of previous iterations.
+
+The basic structure of a `for` loop is:
+
+```{r, eval=FALSE}
+for(iterator in set of values){
+  do a thing
+}
+```
+
+For example:
+
+```{r}
+for(i in 1:10){
+  print(i)
+}
+```
+
+The `1:10` bit creates a vector on the fly; you can iterate
+over any other vector as well.
+
+We can use a `for` loop nested within another `for` loop to iterate over two things at
+once.
+
+```{r}
+for (i in 1:5){
+  for(j in c('a', 'b', 'c', 'd', 'e')){
+    print(paste(i,j))
+  }
+}
+```
+
+Rather than printing the results, we could write the loop output to a new object.
+
+```{r}
+output_vector <- c()
+for (i in 1:5){
+  for(j in c('a', 'b', 'c', 'd', 'e')){
+    temp_output <- paste(i, j)
+    output_vector <- c(output_vector, temp_output)
+  }
+}
+output_vector
+```
+
+This approach can be useful, but 'growing your results' (building
+the result object incrementally) is computationally inefficient, so avoid
+it when you are iterating through a lot of values.
+
+> #### Tip: don't grow your results {.callout}
+>
+> One of the biggest things that trips up novices and
+> experienced R users alike, is building a results object
+> (vector, list, matrix, data frame) as your for loop progresses.
+> Computers are very bad at handling this, so your calculations
+> can very quickly slow to a crawl. It's much better to define
+> an empty results object before hand of the appropriate dimensions.
+> So if you know the end result will be stored in a matrix like above,
+> create an empty matrix with 5 row and 5 columns, then at each iteration
+> store the results in the appropriate location.
+>
+
+A better way is to define your (empty) output object before filling in the values.
+For this example, it looks more involved, but is still more efficient.
+
+```{r}
+output_matrix <- matrix(nrow=5, ncol=5)
+j_vector <- c('a', 'b', 'c', 'd', 'e')
+for (i in 1:5){
+  for(j in 1:5){
+    temp_j_value <- j_vector[j]
+    temp_output <- paste(i, temp_j_value)
+    output_matrix[i, j] <- temp_output
+  }
+}
+output_vector2 <- as.vector(output_matrix)
+output_vector2
+```
+
+> #### Tip: While loops {.callout}
+>
+>
+> Sometimes you will find yourself needing to repeat an operation until a certain
+> condition is met. You can do this with a `while` loop.
+> 
+> ```{r, eval=FALSE}
+> while(this condition is true){
+>   do a thing
+> }
+> ```
+> 
+> As an example, here's a while loop 
+> that generates random numbers from a uniform distribution (the `runif` function)
+> between 0 and 1 until it gets one that's less than 0.1.
+> 
+> ~~~ {.r}
+> z <- 1
+> while(z > 0.1){
+>   z <- runif(1)
+>   print(z)
+> }
+> ~~~
+> 
+> `while` loops will not always be appropriate. You have to be particularly careful
+> that you don't end up in an infinite loop because your condition is never met.
+>
+
+> #### Challenge 2 {.challenge}
+>
+> Compare the objects output_vector and
+> output_vector2. Are they the same? If not, why not?
+> How would you change the last block of code to make output_vector2
+> the same as output_vector?
+>
+
+> #### Challenge 3 {.challenge}
+>
+> Write a script that loops through the `gapminder` data by continent and prints out
+> whether the mean life expectancy is smaller or larger than 50
+> years.
+>
+
+> #### Challenge 4 {.challenge}
+>
+> Modify the script from Challenge 4 to also loop over each
+> country. This time print out whether the life expectancy is
+> smaller than 50, between 50 and 70, or greater than 70.
+>
+
+> #### Challenge 5 - Advanced {.challenge}
+>
+> Write a script that loops over each country in the `gapminder` dataset,
+> tests whether the country starts with a 'B', and graphs life expectancy
+> against time as a line graph if the mean life expectancy is under 50 years.
+>
+
+## Refresh on packages: what they are and how to install them
+
+## plyr
+
+Previously we looked at how you can use functions to simplify your code.
+We defined the `calcGDP` function, which takes the gapminder dataset,
+and multiplies the population and GDP per capita column. We also defined
+additional arguments so we could filter by `year` and `country`:
+
+```{r}
+# Takes a dataset and multiplies the population column
+# with the GDP per capita column.
+calcGDP <- function(dat, year=NULL, country=NULL) {
+  if(!is.null(year)) {
+    dat <- dat[dat$year %in% year, ]
+  }
+  if (!is.null(country)) {
+    dat <- dat[dat$country %in% country,]
+  }
+  gdp <- dat$pop * dat$gdpPercap
+
+  new <- cbind(dat, gdp=gdp)
+  return(new)
+}
+```
+
+A common task you'll encounter when working with data, is that you'll want to
+run calculations on different groups within the data. In the above, we were
+simply calculating the GDP by multiplying two columns together. But what if
+we wanted to calculated the mean GDP per continent?
+
+We could run `calcGPD` and then take the mean of each continent:
+
+```{r}
+withGDP <- calcGDP(gapminder)
+mean(withGDP[withGDP$continent == "Africa", "gdp"])
+mean(withGDP[withGDP$continent == "Americas", "gdp"])
+mean(withGDP[withGDP$continent == "Asia", "gdp"])
+```
+
+But this isn't very *nice*. Yes, by using a function, you have reduced a
+substantial amount of repetition. That **is** nice. But there is still
+repetition. Repeating yourself will cost you time, both now and later, and
+potentially introduce some nasty bugs.
+
+We could write a new function that is flexible like `calcGDP`, but this
+also takes a substantial amount of effort and testing to get right.
+
+The abstract problem we're encountering here is know as "split-apply-combine":
+
+![Split apply combine](fig/splitapply.png)
+
+We want to *split* our data into groups, in this case continents, *apply*
+some calculations on that group, then optionally *combine* the results
+together afterwards.
+
+#### The `plyr` package
+
+For those of you who have used R before, you might be familiar with the
+`apply` family of functions. While R's built in functions do work, we're
+going to introduce you to another method for solving the "split-apply-combine"
+problem. The [plyr](http://had.co.nz/plyr/) package provides a set of
+functions that we find more user friendly for solving this problem.
+
+We installed this package in an earlier challenge. Let's load it now:
+
+```{r}
+library(plyr)
+```
+
+Plyr has functions for operating on `lists`, `data.frames` and `arrays`
+(matrices, or n-dimensional vectors). Each function performs:
+
+1. A **split**ting operation
+2. **Apply** a function on each split in turn.
+3. Re**combine** output data as a single data object.
+
+The functions are named based on the data structure they expect as input,
+and the data structure you want returned as output: [a]rray, [l]ist, or
+[d]ata.frame. The first letter corresponds to the input data structure,
+the second letter to the output data structure, and then the rest of the
+function is named "ply".
+
+This gives us 9 core functions **ply.  There are an additional three functions
+which will only perform the split and apply steps, and not any combine step.
+They're named by their input data type and represent null output by a `_` (see
+table)
+
+Note here that plyr's use of "array" is different to R's,
+an array in ply can include a vector or matrix.
+
+![Full apply suite](fig/full_apply_suite.png)
+
+
+Each of the xxply functions (`daply`, `ddply`, `llply`, `laply`, ...) has the
+same structure and has 4 key features and structure:
+
+```{r, eval=FALSE}
+xxply(.data, .variables, .fun)
+```
+
+* The first letter of the function name gives the input type and the second gives the output type.
+* .data - gives the data object to be processed
+* .variables - identifies the splitting variables
+* .fun - gives the function to be called on each piece
+
+Now we can quickly calculate the mean GDP per continent:
+
+``` {r}
+ddply(
+ .data = calcGDP(gapminder),
+ .variables = "continent",
+ .fun = function(x) mean(x$gdp)
+)
+```
+
+Let's walk through what just happened:
+
+- The `ddply` function feeds in a `data.frame` (function starts with **d**) and
+returns another `data.frame` (2nd letter is a **d**) i
+- the first argument we gave was the data.frame we wanted to operate on: in this
+  case the gapminder data. We called `calcGDP` on it first so that it would have
+  the additional `gdp` column added to it.
+- The second argument indicated our split criteria: in this case the "continent"
+  column. Note that we just gave the name of the column, not the actual column
+  itself like we've done previously with subsetting. Plyr takes care of these
+  implementation details for you.
+- The third argument is the function we want to apply to each grouping of the
+  data. We had to define our own short function here: each subset of the data
+  gets stored in `x`, the first argument of our function. This is an anonymous
+  function: we haven't defined it elsewhere, and it has no name. It only exists
+  in the scope of our call to `ddply`.
+
+What if we want a different type of output data structure?:
+
+```{r}
+dlply(
+ .data = calcGDP(gapminder),
+ .variables = "continent",
+ .fun = function(x) mean(x$gdp)
+)
+```
+
+We called the same function again, but changed the second letter to an `l`, so
+the output was returned as a list.
+
+We can specify multiple columns to group by:
+
+``` {r}
+ddply(
+ .data = calcGDP(gapminder),
+ .variables = c("continent", "year"),
+ .fun = function(x) mean(x$gdp)
+)
+```
+
+```{r}
+daply(
+ .data = calcGDP(gapminder),
+ .variables = c("continent", "year"),
+ .fun = function(x) mean(x$gdp)
+)
+```
+
+You can use these functions in place of `for` loops (and its usually faster to
+do so): just write the body of the for loop in the anonymous function:
+
+```{r}
+d_ply(
+  .data=gapminder,
+  .variables = "continent",
+  .fun = function(x) {
+    meanGDPperCap <- mean(x$gdpPercap)
+    print(paste(
+      "The mean GDP per capita for", unique(x$continent),
+      "is", format(meanGDPperCap, big.mark=",")
+   ))
+  }
+)
+```
+
+> #### Tip: printing numbers {.callout}
+>
+> The `format` function can be used to make numeric
+> values "pretty" for printing out in messages.
+>
+
+
+> #### Challenge 1 {.challenge}
+>
+> Calculate the average life expectancy per continent. Which has the longest?
+> Which had the shortest?
+>
+
+> #### Challenge 2 {.challenge}
+>
+> Calculate the average life expectancy per continent and year. Which had the
+> longest and shortest in 2007? Which had the greatest change in between 1952
+> and 2007?
+>
+
+> #### Advanced Challenge {.challenge}
+>
+> Calculate the difference in mean life expectancy between
+> the years 1952 and 2007 from the output of challenge 2
+> using one of the `plyr` functions.
+>
+
+> #### Alternate Challenge if class seems lost {.challenge}
+>
+> Without running them, which of the following will calculate the average
+> life expectancy per continent:
+>
+> 1.
+> ```{r, eval=FALSE}
+> ddply(
+>   .data = gapminder,
+>   .variables = gapminder$continent,
+>   .fun = function(dataGroup) {
+>      mean(dataGroup$lifeExp)
+>   }
+> )
+> ```
+>
+> 2.
+> ```{r, eval=FALSE}
+> ddply(
+>   .data = gapminder,
+>   .variables = "continent",
+>   .fun = mean(dataGroup$lifeExp)
+> )
+> ```
+>
+> 3.
+> ```{r, eval=FALSE}
+> ddply(
+>   .data = gapminder,
+>   .variables = "continent",
+>   .fun = function(dataGroup) {
+>      mean(dataGroup$lifeExp)
+>   }
+> )
+> ```
+>
+> 4.
+> ```{r, eval=FALSE}
+> adply(
+>   .data = gapminder,
+>   .variables = "continent",
+>   .fun = function(dataGroup) {
+>      mean(dataGroup$lifeExp)
+>   }
+> )
+> ```
+>
+
+## dplyr
+
+Manipulation of dataframes means many things to many researchers, we often select certain observations (rows) or variables (columns), we often group the data by a certain variable(s), or we even calculate summary statistic. We can do these operations using the normal base R operations:
+
+
+~~~{.r}
+mean(gapminder[gapminder$continent == "Africa", "gdpPercap"])
+~~~
+
+
+
+~~~{.output}
+[1] 2193.755
+
+~~~
+
+
+
+~~~{.r}
+mean(gapminder[gapminder$continent == "Americas", "gdpPercap"])
+~~~
+
+
+
+~~~{.output}
+[1] 7136.11
+
+~~~
+
+
+
+~~~{.r}
+mean(gapminder[gapminder$continent == "Asia", "gdpPercap"])
+~~~
+
+
+
+~~~{.output}
+[1] 7902.15
+
+~~~
+
+But this isn't very *nice* because there is a fair bit of repetition. Repeating yourself will cost you time, both now and later, and potentially introduce some nasty bugs.
+
+#### The `dplyr` package
+
+Luckily, the [`dplyr`](https://cran.r-project.org/web/packages/dplyr/dplyr.pdf) package provides a number of very useful functions for manipulating dataframes in a way that will reduce the above repetition, reduce the probability of making errors, and probably even save you some typing. As an added bonus, you might even find the `dplyr` grammar easier to read.
+
+Here we're going to cover 6 of the most commonly used functions as well as using pipes (`%>%`) to combine them. 
+
+1. `select()`
+2. `filter()`
+3. `group_by()`
+4. `summarize()`
+5. `mutate()`
+
+If you have have not installed this package earlier, please do so:
+
+
+~~~{.r}
+install.packages('dplyr')
+~~~
+
+Now let's load the package:
+
+
+~~~{.r}
+library(dplyr)
+~~~
+
+#### Using select()
+
+If, for example, we wanted to move forward with only a few of the variables in our dataframe we could use the `select()` function. This will keep only the variables you select.
+
+
+~~~{.r}
+year_country_gdp <- select(gapminder,year,country,gdpPercap)
+~~~
+
+<!--html_preserve--><div id="htmlwidget-8169" style="width:504px;height:504px;" class="grViz"></div>
+<script type="application/json" data-for="htmlwidget-8169">{ "x": {
+ "diagram": "digraph html {\n    table1 [shape=none, margin=0,label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD PORT=\"f0\" BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">a</TD>\n            <TD BGCOLOR=\"#FF7400\" CELLPADDING=\"0\">b</TD>\n            <TD PORT=\"f1\" BGCOLOR=\"#009999\" CELLPADDING=\"0\">c</TD>\n            <TD BGCOLOR=\"#00CC00\" CELLPADDING=\"0\">d</TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\"></TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\"></TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\"></TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n    </TABLE>>];\n\n    table2 [shape=none, margin=0, label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD PORT=\"f0\" BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">a</TD>\n            <TD PORT=\"f1\" BGCOLOR=\"#009999\" CELLPADDING=\"0\">c</TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n        </TR>\n    </TABLE>>];\n   \n    table1:f1 -> table2:f1 \n    table1:f0 -> table2:f0\n\n    subgraph {\n        rank = same; table1; table2;\n    }\n    \n\n    labelloc=\"t\";\n    label=\"select(data.frame,a,c)\";\n}\n",
+"config": {
+ "engine": "dot",
+"options": null 
+} 
+},"evals": [  ] }</script><!--/html_preserve-->
+
+If we open up `year_country_gdp` we'll see that it only contains the year, country and gdpPercap. Above we used 'normal' grammar, but the strengths of `dplyr` lie in combining several functions using pipes. Since the pipes grammar is unlike anything we've seen in R before, let's repeat what we've done above using pipes.
+
+
+~~~{.r}
+year_country_gdp <- gapminder %>% select(year,country,gdpPercap)
+~~~
+
+To help you understand why we wrote that in that way, let's walk through it step by step. First we summon the gapminder dataframe and pass it on, using the pipe symbol `%>%`, to the next step which is the `select()` function. In this case we don't specify which data object we use in the `select()` function since in gets that from the previous pipe. **Fun Fact**: There is a good chance you have encountered pipes before in the shell. In R, a pipe symbol is `%>%` while in the shell it is `|` but the concept is the same!
+
+#### Using filter()
+
+If we now wanted to move forward with the above, but only with European countries, we can combine `select` and `filter`
+
+
+~~~{.r}
+year_country_gdp_euro <- gapminder %>%
+    filter(continent=="Europe") %>%
+    select(year,country,gdpPercap)
+~~~
+
+> #### Challenge 1 {.challenge}
+>
+> Write a single command (which can span multiple lines and includes pipes) that will produce a dataframe that has the African values for `lifeExp`, `country` and `year`, but not for other Continents. 
+>How many rows does your dataframe have and why?
+>
+
+
+As with last time, first we pass the gapminder dataframe to the `filter()` function, then we pass the filtered version of the gapminder dataframe to the `select()` function. **Note:** The order of operations is very important in this case. If we used 'select' first, filter would not be able to find the variable continent since we would have removed it in the previous step.
+
+#### Using group_by() and summarize()
+
+Now, we were supposed to be reducing the error prone repetitiveness of what can be done with base R, but up to now we haven't done that since we would have to repeat the above for each continent. Instead of `filter()`, which will only pass observations that meet your criteria (in the above: `continent=="Europe"`), we can use `group_by()`, which will essentially use every unique criteria that you could have used in filter.
+
+
+~~~{.r}
+str(gapminder)
+~~~
+
+
+
+~~~{.output}
+'data.frame':	1704 obs. of  6 variables:
+ $ country  : Factor w/ 142 levels "Afghanistan",..: 1 1 1 1 1 1 1 1 1 1 ...
+ $ year     : int  1952 1957 1962 1967 1972 1977 1982 1987 1992 1997 ...
+ $ pop      : num  8425333 9240934 10267083 11537966 13079460 ...
+ $ continent: Factor w/ 5 levels "Africa","Americas",..: 3 3 3 3 3 3 3 3 3 3 ...
+ $ lifeExp  : num  28.8 30.3 32 34 36.1 ...
+ $ gdpPercap: num  779 821 853 836 740 ...
+
+~~~
+
+
+
+~~~{.r}
+str(gapminder %>% group_by(continent))
+~~~
+
+
+
+~~~{.output}
+Classes 'grouped_df', 'tbl_df', 'tbl' and 'data.frame':	1704 obs. of  6 variables:
+ $ country  : Factor w/ 142 levels "Afghanistan",..: 1 1 1 1 1 1 1 1 1 1 ...
+ $ year     : int  1952 1957 1962 1967 1972 1977 1982 1987 1992 1997 ...
+ $ pop      : num  8425333 9240934 10267083 11537966 13079460 ...
+ $ continent: Factor w/ 5 levels "Africa","Americas",..: 3 3 3 3 3 3 3 3 3 3 ...
+ $ lifeExp  : num  28.8 30.3 32 34 36.1 ...
+ $ gdpPercap: num  779 821 853 836 740 ...
+ - attr(*, "vars")=List of 1
+  ..$ : symbol continent
+ - attr(*, "drop")= logi TRUE
+ - attr(*, "indices")=List of 5
+  ..$ : int  24 25 26 27 28 29 30 31 32 33 ...
+  ..$ : int  48 49 50 51 52 53 54 55 56 57 ...
+  ..$ : int  0 1 2 3 4 5 6 7 8 9 ...
+  ..$ : int  12 13 14 15 16 17 18 19 20 21 ...
+  ..$ : int  60 61 62 63 64 65 66 67 68 69 ...
+ - attr(*, "group_sizes")= int  624 300 396 360 24
+ - attr(*, "biggest_group_size")= int 624
+ - attr(*, "labels")='data.frame':	5 obs. of  1 variable:
+  ..$ continent: Factor w/ 5 levels "Africa","Americas",..: 1 2 3 4 5
+  ..- attr(*, "vars")=List of 1
+  .. ..$ : symbol continent
+
+~~~
+You will notice that the structure of the dataframe where we used `group_by()` (`grouped_df`) is not the same as the original `gapminder` (`data.frame`). A `grouped_df` can be thought of as a `list` where each item in the `list`is a `data.frame` which contains only the rows that correspond to the a particular value `continent` (at least in the example above)
+
+<!--html_preserve--><div id="htmlwidget-9968" style="width:504px;height:504px;" class="grViz"></div>
+<script type="application/json" data-for="htmlwidget-9968">{ "x": {
+ "diagram": "digraph html {\n    table1 [shape=none, margin=0,label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">a</TD>\n            <TD BGCOLOR=\"#FF7400\" CELLPADDING=\"0\">b</TD>\n            <TD BGCOLOR=\"#009999\" CELLPADDING=\"0\">c</TD>\n            <TD BGCOLOR=\"#00CC00\" CELLPADDING=\"0\">d</TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">1</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD PORT=\"f0\" BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">1</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">2</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD PORT=\"f1\" BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">2</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">3</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD PORT=\"f2\" BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">3</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n    </TABLE>>];\ntable2 [shape=none, margin=0,label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">a</TD>\n            <TD BGCOLOR=\"#FF7400\" CELLPADDING=\"0\">b</TD>\n            <TD BGCOLOR=\"#009999\" CELLPADDING=\"0\">c</TD>\n            <TD BGCOLOR=\"#00CC00\" CELLPADDING=\"0\">d</TD>\n        </TR>\n        \n        <TR>\n            <TD PORT=\"f0\" BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">1</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">1</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n\n    </TABLE>>];\ntable3 [shape=none, margin=0,label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">a</TD>\n            <TD BGCOLOR=\"#FF7400\" CELLPADDING=\"0\">b</TD>\n            <TD BGCOLOR=\"#009999\" CELLPADDING=\"0\">c</TD>\n            <TD BGCOLOR=\"#00CC00\" CELLPADDING=\"0\">d</TD>\n        </TR>\n\n        <TR>\n            <TD PORT=\"f1\" BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">2</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">2</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n    </TABLE>>];\ntable4 [shape=none, margin=0,label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">a</TD>\n            <TD BGCOLOR=\"#FF7400\" CELLPADDING=\"0\">b</TD>\n            <TD BGCOLOR=\"#009999\" CELLPADDING=\"0\">c</TD>\n            <TD BGCOLOR=\"#00CC00\" CELLPADDING=\"0\">d</TD>\n        </TR>\n        \n        <TR>\n            <TD PORT=\"f2\" BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">3</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">3</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n    </TABLE>>];\n\n   \n   \n    table1:f0 -> table2:f0 \n    table1:f1 -> table3:f1\n    table1:f2 -> table4:f2\n\n    subgraph {\n        rank = same; table1; table2; table3 ;table4;\n    }\n    subgraph {\n        table2\n        table3\n        table4\n    }\n\n    labelloc=\"t\";\n    label=\"gapminder %>% group_by(a)\";\n}\n",
+"config": {
+ "engine": "dot",
+"options": null 
+} 
+},"evals": [  ] }</script><!--/html_preserve-->
+#### Using summarize()
+
+The above was a bit on the uneventful side because `group_by()` much more exciting in conjunction with `summarize()`. This will allow use to create new variable(s) by using functions that repeat for each of the continent-specific data frames. That is to say, using the `group_by()` function, we split our original dataframe into multiple pieces, then we can run functions (e.g. `mean()` or `sd()`) within `summarize()`.
+
+
+~~~{.r}
+gdp_bycontinents <- gapminder %>%
+    group_by(continent) %>%
+    summarize(mean_gdpPercap=mean(gdpPercap))
+~~~
+
+<!--html_preserve--><div id="htmlwidget-1806" style="width:504px;height:504px;" class="grViz"></div>
+<script type="application/json" data-for="htmlwidget-1806">{ "x": {
+ "diagram": "digraph html {\n    table1 [shape=none, margin=0,label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">a</TD>\n            <TD BGCOLOR=\"#FF7400\" CELLPADDING=\"0\">b</TD>\n            <TD BGCOLOR=\"#009999\" CELLPADDING=\"0\">c</TD>\n            <TD BGCOLOR=\"#00CC00\" CELLPADDING=\"0\">d</TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">1</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD PORT=\"f0\" BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">1</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">2</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD PORT=\"f1\" BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">2</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">3</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD PORT=\"f2\" BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">3</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n    </TABLE>>];\n\ntable2 [shape=none, margin=0,label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD PORT=\"f0\" BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">a</TD>\n            <TD BGCOLOR=\"#FF7400\" CELLPADDING=\"0\">b</TD>\n            <TD BGCOLOR=\"#009999\" CELLPADDING=\"0\">c</TD>\n            <TD BGCOLOR=\"#00CC00\" CELLPADDING=\"0\">d</TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">1</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD PORT=\"f3\" BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">1</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n\n    </TABLE>>];\n\ntable3 [shape=none, margin=0,label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD PORT=\"f1\" BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">a</TD>\n            <TD BGCOLOR=\"#FF7400\" CELLPADDING=\"0\">b</TD>\n            <TD BGCOLOR=\"#009999\" CELLPADDING=\"0\">c</TD>\n            <TD BGCOLOR=\"#00CC00\" CELLPADDING=\"0\">d</TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">2</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD PORT=\"f3\" BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">2</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n    </TABLE>>];\n\ntable4 [shape=none, margin=0,label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD PORT=\"f2\" BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">a</TD>\n            <TD BGCOLOR=\"#FF7400\" CELLPADDING=\"0\">b</TD>\n            <TD BGCOLOR=\"#009999\" CELLPADDING=\"0\">c</TD>\n            <TD BGCOLOR=\"#00CC00\" CELLPADDING=\"0\">d</TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">3</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD PORT=\"f3\" BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">3</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n    </TABLE>>];\n\n    table5 [shape=none, margin=0,label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">a</TD>\n            <TD BGCOLOR=\"#FF7400\" CELLPADDING=\"0\">mean_b</TD>\n        </TR>\n        \n        <TR>\n            <TD PORT=\"f0\" BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">1</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n        </TR>\n       \n        <TR>\n            <TD PORT=\"f1\" BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">2</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n        </TR>\n        \n        <TR>\n            <TD PORT=\"f2\" BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">3</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n        </TR>\n        \n    </TABLE>>];\n   \n   \n    table1:f0 -> table2:f0 \n    table1:f1 -> table3:f1\n    table1:f2 -> table4:f2\n    table2:f3 -> table5:f0 \n    table3:f3 -> table5:f1\n    table4:f3 -> table5:f2\n    subgraph {\n        rank = same; table1; table2; table3 ; table4;\n    }\n    subgraph {\n        table2\n        table3\n        table4\n    }\n\n    labelloc=\"t\";\n    label=\"gapminder %>% group_by(a) %>% summarize(mean_b=mean(b))\";\n}\n",
+"config": {
+ "engine": "dot",
+"options": null 
+} 
+},"evals": [  ] }</script><!--/html_preserve-->
+
+That allowed us to calculate the mean gdpPercap for each continent, but it gets even better.
+
+> #### Challenge 2 {.challenge}
+>
+> Calculate the average life expectancy per country. Which had the longest life expectancy and which had the shortest life expectancy?
+>
+
+The function `group_by()` allows us to group by multiple variables. Let's group by `year` and `continent`
+
+
+
+~~~{.r}
+gdp_bycontinents_byyear <- gapminder %>%
+    group_by(continent,year) %>%
+    summarize(mean_gdpPercap=mean(gdpPercap))
+~~~
+
+That is already quite powerful, but it gets even better! You're not limited to defining 1 new variable in `summarize()`.
+
+
+~~~{.r}
+gdp_pop_bycontinents_byyear <- gapminder %>%
+    group_by(continent,year) %>%
+    summarize(mean_gdpPercap=mean(gdpPercap),
+              sd_gdpPercap=sd(gdpPercap),
+              mean_pop=mean(pop),
+              sd_pop=sd(pop))
+~~~
+
+#### Using mutate()
+
+We can also create new variables prior to (or even after) summarizing information using `mutate()`.
+
+~~~{.r}
+gdp_pop_bycontinents_byyear <- gapminder %>%
+    mutate(gdp_billion=gdpPercap*pop/10^9) %>%
+    group_by(continent,year) %>%
+    summarize(mean_gdpPercap=mean(gdpPercap),
+              sd_gdpPercap=sd(gdpPercap),
+              mean_pop=mean(pop),
+              sd_pop=sd(pop),
+              mean_pop=mean(pop),
+              sd_pop=sd(pop))
+~~~
+
+
+
+
+
+
+> #### Advanced Challenge {.challenge}
+> Calculate the average life expectancy in 2002 of 2 randomly selected countries for each continent. Then arrange the continent names in reverse order.
+> **Hint:** Use the `dplyr` functions `arrange()` and `sample_n()`, they have similar syntax to other dplyr functions.
+>
+
+> #### Solution to Challenge 1 {.challenge}
+>
+>~~~{.r}
+>year_country_lifeExp_Africa <- gapminder %>%
+>                            filter(continent=="Africa") %>%
+>                            select(year,country,lifeExp)
+>~~~
+
+> #### Solution to Challenge 2 {.challenge}
+>
+>~~~{.r}
+>lifeExp_bycountry <- gapminder %>%
+>    group_by(country) %>%
+>    summarize(mean_lifeExp=mean(lifeExp))
+>~~~
+
+> #### Solution to Advanced Challenge {.challenge}
+>
+>~~~{.r}
+>lifeExp_2countries_bycontinents <- gapminder %>% 
+>    filter(year==2002) %>%
+>    group_by(continent) %>%
+>    sample_n(2) %>%
+>    summarize(mean_lifeExp=mean(lifeExp)) %>%
+>    arrange(desc(mean_lifeExp))
+>~~~
+
+#### Other great resources
+[Data Wrangling Cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
+[Introduction to dplyr](https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html)
+
+## tidyr
+
+Researchers often want to manipulate their data from the 'wide' to the 'long' format, or vice-versa. The 'long' format is where:
+
+ - each column is a variable
+ - each row is an observation
+
+In the 'long' format, you usually have 1 column for the observed variable and the other columns are ID variables.
+
+
+For the 'wide' format each row is often a site/subject/patient and you have multiple observation variables containing the same type of data. These can be either repeated observations over time, or observation of multiple variables (or a mix of both). You may find data input may be simpler or some other applications may prefer the 'wide' format. However, many of `R`'s functions have been designed assuming you have 'long' format data. This tutorial will help you efficiently transform your data regardless of original format.
+
+
+<!--html_preserve--><div id="htmlwidget-9753" style="width:504px;height:504px;" class="grViz"></div>
+<script type="application/json" data-for="htmlwidget-9753">{ "x": {
+ "diagram": "digraph html {\n\n    table1 [shape=none, margin=0, label=<\n       <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">ID</TD>\n            <TD BGCOLOR=\"#FF7400\" CELLPADDING=\"0\">a1</TD>\n            <TD BGCOLOR=\"#009999\" CELLPADDING=\"0\">a2</TD>\n            <TD BGCOLOR=\"#00CC00\" CELLPADDING=\"0\">a3</TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\"></TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\"></TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\"></TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n    </TABLE>>];\n\ntable2 [shape=none, margin=0,label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">ID</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">ID2</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">A</TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\">1</TD>\n            <TD BGCOLOR=\"#FF7400\">a1</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\">2</TD>\n            <TD BGCOLOR=\"#FF7400\">a1</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\">3</TD>\n            <TD BGCOLOR=\"#FF7400\">a1</TD>\n            <TD BGCOLOR=\"#FF7400\"></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#FF0000\">1</TD>\n            <TD BGCOLOR=\"#009999\">a2</TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\">2</TD>\n            <TD BGCOLOR=\"#009999\">a2</TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\">3</TD>\n            <TD BGCOLOR=\"#009999\">a2</TD>\n            <TD BGCOLOR=\"#009999\"></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#FF0000\">1</TD>\n            <TD BGCOLOR=\"#00CC00\">a3</TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\">2</TD>\n            <TD BGCOLOR=\"#00CC00\">a3</TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#FF0000\">3</TD>\n            <TD BGCOLOR=\"#00CC00\">a3</TD>\n            <TD BGCOLOR=\"#00CC00\"></TD>\n        </TR>\n    </TABLE>>];\n   \n    subgraph {\n        rank = same; table1; table2;\n    }\n    \n\n    labelloc=\"t\";\n    label=\"wide      vs      long\";\n}\n",
+"config": {
+ "engine": "dot",
+"options": null 
+} 
+},"evals": [  ] }</script><!--/html_preserve-->
+
+These data formats mainly affect readability. For humans, the wide format is often more intuitive since we can often see more of the data on the screen due to it's shape. However, the long format is more machine readable and is closer to the formating of databases. The ID variables in our dataframes are similar to the fields in a database and observed variables are like the database values.
+
+###Getting started
+First install the packages if you haven't already done so (you probably installed dplyr in the previous lesson):
+
+~~~{.r}
+#install.packages("tidyr")
+#install.packages("dplyr")
+~~~
+
+Load the packages
+
+~~~{.r}
+library("tidyr")
+library("dplyr")
+~~~
+
+First, lets look at the structure of our original gapminder dataframe:
+
+~~~{.r}
+str(gapminder)
+~~~
+
+
+
+~~~{.output}
+'data.frame':	1704 obs. of  6 variables:
+ $ country  : chr  "Afghanistan" "Afghanistan" "Afghanistan" "Afghanistan" ...
+ $ year     : int  1952 1957 1962 1967 1972 1977 1982 1987 1992 1997 ...
+ $ pop      : num  8425333 9240934 10267083 11537966 13079460 ...
+ $ continent: chr  "Asia" "Asia" "Asia" "Asia" ...
+ $ lifeExp  : num  28.8 30.3 32 34 36.1 ...
+ $ gdpPercap: num  779 821 853 836 740 ...
+
+~~~
+
+> #### Challenge 1 {.challenge}
+>
+> Is gapminder a purely long, purely wide, or some intermediate format?
+>
+
+Sometimes, as with the gapminder dataset, we have multiple types of observed data. It is somewhere in between the purely 'long' and 'wide' data formats. We have 3 "ID variables" (`continent`, `country`, `year`) and 3 "Observation variables" (`pop`,`lifeExp`,`gdpPercap`). I usually prefer my data in this intermediate format in most cases despite not having ALL observations in 1 column given that all 3 observation variables have different units. There are few operations that would need us to stretch out this dataframe any longer (i.e. 4 ID variables and 1 Observation variable).
+
+While using many of the functions in R, which are often vector based, you usually do not want to do mathematical operations on values with different units. For example, using the purely long format, a single mean for all of the values of population, life expectancy, and GDP would not be meaningful since it would return the mean of values with 3 incompatible units. The solution is that we first manipulate the data either by grouping (see the lesson on `dplyr`), or we change the structure of the dataframe.
+**Note:** Some plotting functions in R actually work better in the wide format data.
+
+#### From wide to long format with gather()
+Until now, we've been using the nicely formatted original gapminder dataset, but 'real' data (i.e. our own research data) will never be so well organized. Here let's start with the wide format version of the gapminder dataset.
+
+
+~~~{.r}
+str(gap_wide)
+~~~
+
+
+
+~~~{.output}
+'data.frame':	142 obs. of  38 variables:
+ $ continent     : chr  "Africa" "Africa" "Africa" "Africa" ...
+ $ country       : chr  "Algeria" "Angola" "Benin" "Botswana" ...
+ $ gdpPercap_1952: num  2449 3521 1063 851 543 ...
+ $ gdpPercap_1957: num  3014 3828 960 918 617 ...
+ $ gdpPercap_1962: num  2551 4269 949 984 723 ...
+ $ gdpPercap_1967: num  3247 5523 1036 1215 795 ...
+ $ gdpPercap_1972: num  4183 5473 1086 2264 855 ...
+ $ gdpPercap_1977: num  4910 3009 1029 3215 743 ...
+ $ gdpPercap_1982: num  5745 2757 1278 4551 807 ...
+ $ gdpPercap_1987: num  5681 2430 1226 6206 912 ...
+ $ gdpPercap_1992: num  5023 2628 1191 7954 932 ...
+ $ gdpPercap_1997: num  4797 2277 1233 8647 946 ...
+ $ gdpPercap_2002: num  5288 2773 1373 11004 1038 ...
+ $ gdpPercap_2007: num  6223 4797 1441 12570 1217 ...
+ $ lifeExp_1952  : num  43.1 30 38.2 47.6 32 ...
+ $ lifeExp_1957  : num  45.7 32 40.4 49.6 34.9 ...
+ $ lifeExp_1962  : num  48.3 34 42.6 51.5 37.8 ...
+ $ lifeExp_1967  : num  51.4 36 44.9 53.3 40.7 ...
+ $ lifeExp_1972  : num  54.5 37.9 47 56 43.6 ...
+ $ lifeExp_1977  : num  58 39.5 49.2 59.3 46.1 ...
+ $ lifeExp_1982  : num  61.4 39.9 50.9 61.5 48.1 ...
+ $ lifeExp_1987  : num  65.8 39.9 52.3 63.6 49.6 ...
+ $ lifeExp_1992  : num  67.7 40.6 53.9 62.7 50.3 ...
+ $ lifeExp_1997  : num  69.2 41 54.8 52.6 50.3 ...
+ $ lifeExp_2002  : num  71 41 54.4 46.6 50.6 ...
+ $ lifeExp_2007  : num  72.3 42.7 56.7 50.7 52.3 ...
+ $ pop_1952      : num  9279525 4232095 1738315 442308 4469979 ...
+ $ pop_1957      : num  10270856 4561361 1925173 474639 4713416 ...
+ $ pop_1962      : num  11000948 4826015 2151895 512764 4919632 ...
+ $ pop_1967      : num  12760499 5247469 2427334 553541 5127935 ...
+ $ pop_1972      : num  14760787 5894858 2761407 619351 5433886 ...
+ $ pop_1977      : num  17152804 6162675 3168267 781472 5889574 ...
+ $ pop_1982      : num  20033753 7016384 3641603 970347 6634596 ...
+ $ pop_1987      : num  23254956 7874230 4243788 1151184 7586551 ...
+ $ pop_1992      : num  26298373 8735988 4981671 1342614 8878303 ...
+ $ pop_1997      : num  29072015 9875024 6066080 1536536 10352843 ...
+ $ pop_2002      : int  31287142 10866106 7026113 1630347 12251209 7021078 15929988 4048013 8835739 614382 ...
+ $ pop_2007      : int  33333216 12420476 8078314 1639131 14326203 8390505 17696293 4369038 10238807 710960 ...
+
+~~~
+
+<!--html_preserve--><div id="htmlwidget-3520" style="width:504px;height:504px;" class="grViz"></div>
+<script type="application/json" data-for="htmlwidget-3520">{ "x": {
+ "diagram": "digraph html {\n\n    table1 [shape=none, margin=0, label=<\n       <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">continent</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">country</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">gdpPercap_1952</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">gdpPercap_1957</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">gdpPercap_...</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">lifeExp_1952</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">lifeExp_1957</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">lifeExp_...</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">pop_1952</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">pop_1957</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">pop_...</TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Algeria</TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Angola</TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">...</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">...</TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n        </TR>\n    </TABLE>>];\n\n    labelloc=\"t\";\n    label=\"wide format\";\n}\n",
+"config": {
+ "engine": "dot",
+"options": null 
+} 
+},"evals": [  ] }</script><!--/html_preserve-->
+
+The first step towards getting our nice intermediate data format is to first convert from the wide to the long format. The `tidyr` function `gather()` will 'gather' your observation variables into a single variable.
+
+
+~~~{.r}
+gap_long <- gap_wide %>% gather(obstype_year,obs_values,starts_with('pop'),starts_with('lifeExp'),starts_with('gdpPercap'))
+str(gap_long)
+~~~
+
+
+
+~~~{.output}
+'data.frame':	5112 obs. of  4 variables:
+ $ continent   : chr  "Africa" "Africa" "Africa" "Africa" ...
+ $ country     : chr  "Algeria" "Angola" "Benin" "Botswana" ...
+ $ obstype_year: Factor w/ 36 levels "pop_1952","pop_1957",..: 1 1 1 1 1 1 1 1 1 1 ...
+ $ obs_values  : num  9279525 4232095 1738315 442308 4469979 ...
+
+~~~
+
+Here we have used piping syntax which is similar to what we were doing in the previous lesson with dplyr. In fact, these are compatible and you can use a mix of tidyr and dplyr functions by piping them together
+
+Inside `gather()` we first name the new column for the new ID variable (`obstype_year`), the name for the new amalgamated observation variable (`obs_value`), then the names of the old observation variable. We could have typed out all the observation variables, but as in the `select()` function (see `dplyr` lesson), we can use the `starts_with()` argument to select all variables that starts with the desired character sring. Gather also allows the alternative syntax of using the `-` symbol to identify which variables are not to be gathered (i.e. ID variables)
+
+<!--html_preserve--><div id="htmlwidget-3286" style="width:504px;height:504px;" class="grViz"></div>
+<script type="application/json" data-for="htmlwidget-3286">{ "x": {
+ "diagram": "digraph html {\n\n    table1 [shape=none, margin=0, label=<\n       <TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"1\" CELLPADDING=\"6\">\n        <TR>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">continent</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">country</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">obstype_year</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">obs_value</TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Algeria</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">gdpPercap_1952</TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Algeria</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">gdpPercap_1957</TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Algeria</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">gdpPercap_...</TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Algeria</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">lifeExp_1952</TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Algeria</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">lifeExp_1957</TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Algeria</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">lifeExp_...</TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Algeria</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">pop_1952</TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Algeria</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">pop_1957</TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Algeria</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">pop_...</TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n        </TR>\n        \n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Angola</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">gdpPercap_1952</TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Angola</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">gdpPercap_1957</TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Angola</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">gdpPercap_...</TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Angola</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">lifeExp_1952</TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Angola</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">lifeExp_1957</TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Angola</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">lifeExp_...</TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Angola</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">pop_1952</TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Angola</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">pop_1957</TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">Angola</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">pop_...</TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">...</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">gdpPercap_1952</TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">...</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">gdpPercap_1957</TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">...</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">gdpPercap_...</TD>\n            <TD BGCOLOR=\"#F9E559\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">...</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">lifeExp_1952</TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">...</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">lifeExp_1957</TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">...</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">lifeExp_...</TD>\n            <TD BGCOLOR=\"#EF7126\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">...</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">pop_1952</TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">...</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">pop_1957</TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n        </TR>\n\n        <TR>\n            <TD BGCOLOR=\"#218C8D\" CELLPADDING=\"0\">Africa</TD>\n            <TD BGCOLOR=\"#6CCECB\" CELLPADDING=\"0\">...</TD>\n            <TD BGCOLOR=\"#FF0000\" CELLPADDING=\"0\">pop_...</TD>\n            <TD BGCOLOR=\"#8EDC9D\" ></TD>\n        </TR>\n\n    </TABLE>>];\n\n    labelloc=\"t\";\n    label=\"long format\";\n}\n",
+"config": {
+ "engine": "dot",
+"options": null 
+} 
+},"evals": [  ] }</script><!--/html_preserve-->
+
+
+~~~{.r}
+gap_long <- gap_wide %>% gather(obstype_year,obs_values,-continent,-country)
+str(gap_long)
+~~~
+
+
+
+~~~{.output}
+'data.frame':	5112 obs. of  4 variables:
+ $ continent   : chr  "Africa" "Africa" "Africa" "Africa" ...
+ $ country     : chr  "Algeria" "Angola" "Benin" "Botswana" ...
+ $ obstype_year: Factor w/ 36 levels "gdpPercap_1952",..: 1 1 1 1 1 1 1 1 1 1 ...
+ $ obs_values  : num  2449 3521 1063 851 543 ...
+
+~~~
+
+That may seem trivial with this particular dataframe, but sometimes you have 1 ID variable and 40 Observation variables with irregular variables names. The flexibility is a huge time saver!
+
+
+Now `obstype_year` actually contains 2 pieces of information, the observation type (`pop`,`lifeExp`, or `gdpPercap`) and the `year`. We can use the `separate()` function to split the character strings into multiple variables
+
+
+~~~{.r}
+gap_long <- gap_long %>% separate(obstype_year,into=c('obs_type','year'),sep="_")
+gap_long$year <- as.integer(gap_long$year)
+~~~
+
+
+> #### Challenge 2 {.challenge}
+>
+> Using `gap_long`, calculate the mean life expectancy, population, and gdpPercap for each continent.
+>**Hint:** use the `group_by()` and `summarize()` functions we learned in the `dplyr` lesson
+>
+
+#### From long to intermediate format with spread()
+Now just to double-check our work, let's use the opposite of `gather()` to spread our observation variables back out with the aptly named `spread()`. We can then spread our `gap_long()` to the original intermediate format or the widest format. Let's start with the intermediate format.
+
+
+~~~{.r}
+gap_normal <- gap_long %>% spread(obs_type,obs_values)
+dim(gap_normal)
+~~~
+
+
+
+~~~{.output}
+[1] 1704    6
+
+~~~
+
+
+
+~~~{.r}
+dim(gapminder)
+~~~
+
+
+
+~~~{.output}
+[1] 1704    6
+
+~~~
+
+
+
+~~~{.r}
+names(gap_normal)
+~~~
+
+
+
+~~~{.output}
+[1] "continent" "country"   "year"      "gdpPercap" "lifeExp"   "pop"      
+
+~~~
+
+
+
+~~~{.r}
+names(gapminder)
+~~~
+
+
+
+~~~{.output}
+[1] "country"   "year"      "pop"       "continent" "lifeExp"   "gdpPercap"
+
+~~~
+
+Now we've got an intermediate dataframe `gap_normal` with the same dimensions as the original `gapminder`, but the order of the variables is different. Let's fix that before checking if they are `identical()`.
+
+
+~~~{.r}
+gap_normal <- gap_normal[,names(gapminder)]
+identical(gap_normal,gapminder)
+~~~
+
+
+
+~~~{.output}
+[1] FALSE
+
+~~~
+
+
+
+~~~{.r}
+head(gap_normal)
+~~~
+
+
+
+~~~{.output}
+  country year      pop continent lifeExp gdpPercap
+1 Algeria 1952  9279525    Africa  43.077  2449.008
+2 Algeria 1957 10270856    Africa  45.685  3013.976
+3 Algeria 1962 11000948    Africa  48.303  2550.817
+4 Algeria 1967 12760499    Africa  51.407  3246.992
+5 Algeria 1972 14760787    Africa  54.518  4182.664
+6 Algeria 1977 17152804    Africa  58.014  4910.417
+
+~~~
+
+
+
+~~~{.r}
+head(gapminder)
+~~~
+
+
+
+~~~{.output}
+      country year      pop continent lifeExp gdpPercap
+1 Afghanistan 1952  8425333      Asia  28.801  779.4453
+2 Afghanistan 1957  9240934      Asia  30.332  820.8530
+3 Afghanistan 1962 10267083      Asia  31.997  853.1007
+4 Afghanistan 1967 11537966      Asia  34.020  836.1971
+5 Afghanistan 1972 13079460      Asia  36.088  739.9811
+6 Afghanistan 1977 14880372      Asia  38.438  786.1134
+
+~~~
+
+We're almost there, the original was sorted by `country`, `continent`, then `year`.
+
+
+~~~{.r}
+gap_normal <- gap_normal %>% arrange(country,continent,year)
+identical(gap_normal,gapminder)
+~~~
+
+
+
+~~~{.output}
+[1] TRUE
+
+~~~
+
+That's great! We've gone from the longest format back to the intermediate and we didn't introduce any errors in our code.
+
+Now lets convert the long all the way back to the wide. In the wide format, we will keep country and continent as ID variables and spread the observations across the 3 metrics (`pop`,`lifeExp`,`gdpPercap`) and time (`year`). First we need to create appropriate labels for all our new variables (time*metric combinations) and we also need to unify our ID variables to simplify the process of defining `gap_wide`
+
+
+~~~{.r}
+gap_temp <- gap_long %>% unite(var_ID,continent,country,sep="_")
+str(gap_temp)
+~~~
+
+
+
+~~~{.output}
+'data.frame':	5112 obs. of  4 variables:
+ $ var_ID    : chr  "Africa_Algeria" "Africa_Angola" "Africa_Benin" "Africa_Botswana" ...
+ $ obs_type  : chr  "gdpPercap" "gdpPercap" "gdpPercap" "gdpPercap" ...
+ $ year      : int  1952 1952 1952 1952 1952 1952 1952 1952 1952 1952 ...
+ $ obs_values: num  2449 3521 1063 851 543 ...
+
+~~~
+
+
+
+~~~{.r}
+gap_temp <- gap_long %>%
+    unite(ID_var,continent,country,sep="_") %>%
+    unite(var_names,obs_type,year,sep="_")
+str(gap_temp)
+~~~
+
+
+
+~~~{.output}
+'data.frame':	5112 obs. of  3 variables:
+ $ ID_var    : chr  "Africa_Algeria" "Africa_Angola" "Africa_Benin" "Africa_Botswana" ...
+ $ var_names : chr  "gdpPercap_1952" "gdpPercap_1952" "gdpPercap_1952" "gdpPercap_1952" ...
+ $ obs_values: num  2449 3521 1063 851 543 ...
+
+~~~
+
+Using `unite()` we now have a single ID variable which is a combination of `continent`,`country`,and we have defined variable names. We're now ready to pipe in `spread()`  
+
+
+~~~{.r}
+gap_wide_new <- gap_long %>% 
+    unite(ID_var,continent,country,sep="_") %>%
+    unite(var_names,obs_type,year,sep="_") %>%
+    spread(var_names,obs_values)
+str(gap_wide_new)
+~~~
+
+
+
+~~~{.output}
+'data.frame':	142 obs. of  37 variables:
+ $ ID_var        : chr  "Africa_Algeria" "Africa_Angola" "Africa_Benin" "Africa_Botswana" ...
+ $ gdpPercap_1952: num  2449 3521 1063 851 543 ...
+ $ gdpPercap_1957: num  3014 3828 960 918 617 ...
+ $ gdpPercap_1962: num  2551 4269 949 984 723 ...
+ $ gdpPercap_1967: num  3247 5523 1036 1215 795 ...
+ $ gdpPercap_1972: num  4183 5473 1086 2264 855 ...
+ $ gdpPercap_1977: num  4910 3009 1029 3215 743 ...
+ $ gdpPercap_1982: num  5745 2757 1278 4551 807 ...
+ $ gdpPercap_1987: num  5681 2430 1226 6206 912 ...
+ $ gdpPercap_1992: num  5023 2628 1191 7954 932 ...
+ $ gdpPercap_1997: num  4797 2277 1233 8647 946 ...
+ $ gdpPercap_2002: num  5288 2773 1373 11004 1038 ...
+ $ gdpPercap_2007: num  6223 4797 1441 12570 1217 ...
+ $ lifeExp_1952  : num  43.1 30 38.2 47.6 32 ...
+ $ lifeExp_1957  : num  45.7 32 40.4 49.6 34.9 ...
+ $ lifeExp_1962  : num  48.3 34 42.6 51.5 37.8 ...
+ $ lifeExp_1967  : num  51.4 36 44.9 53.3 40.7 ...
+ $ lifeExp_1972  : num  54.5 37.9 47 56 43.6 ...
+ $ lifeExp_1977  : num  58 39.5 49.2 59.3 46.1 ...
+ $ lifeExp_1982  : num  61.4 39.9 50.9 61.5 48.1 ...
+ $ lifeExp_1987  : num  65.8 39.9 52.3 63.6 49.6 ...
+ $ lifeExp_1992  : num  67.7 40.6 53.9 62.7 50.3 ...
+ $ lifeExp_1997  : num  69.2 41 54.8 52.6 50.3 ...
+ $ lifeExp_2002  : num  71 41 54.4 46.6 50.6 ...
+ $ lifeExp_2007  : num  72.3 42.7 56.7 50.7 52.3 ...
+ $ pop_1952      : num  9279525 4232095 1738315 442308 4469979 ...
+ $ pop_1957      : num  10270856 4561361 1925173 474639 4713416 ...
+ $ pop_1962      : num  11000948 4826015 2151895 512764 4919632 ...
+ $ pop_1967      : num  12760499 5247469 2427334 553541 5127935 ...
+ $ pop_1972      : num  14760787 5894858 2761407 619351 5433886 ...
+ $ pop_1977      : num  17152804 6162675 3168267 781472 5889574 ...
+ $ pop_1982      : num  20033753 7016384 3641603 970347 6634596 ...
+ $ pop_1987      : num  23254956 7874230 4243788 1151184 7586551 ...
+ $ pop_1992      : num  26298373 8735988 4981671 1342614 8878303 ...
+ $ pop_1997      : num  29072015 9875024 6066080 1536536 10352843 ...
+ $ pop_2002      : num  31287142 10866106 7026113 1630347 12251209 ...
+ $ pop_2007      : num  33333216 12420476 8078314 1639131 14326203 ...
+
+~~~
+
+> #### Challenge 3 {.challenge}
+>
+> Take this 1 step further and create a `gap_ludicrously_wide` format data by spreading over countries, year and the 3 metrics?
+>**Hint** this new dataframe should only have 5 rows.
+>
+
+Now we have a great 'wide' format dataframe, but the `ID_var` could be more usable, let's separate it into 2 variables with `separate()`
+
+
+
+~~~{.r}
+gap_wide_betterID <- separate(gap_wide_new,ID_var,c("continent","country"),sep="_")
+gap_wide_betterID <- gap_long %>% 
+    unite(ID_var,continent,country,sep="_") %>%
+    unite(var_names,obs_type,year,sep="_") %>%
+    spread(var_names,obs_values) %>%
+    separate(ID_var,c("continent","country"),sep="_")
+str(gap_wide_betterID)
+~~~
+
+
+
+~~~{.output}
+'data.frame':	142 obs. of  38 variables:
+ $ continent     : chr  "Africa" "Africa" "Africa" "Africa" ...
+ $ country       : chr  "Algeria" "Angola" "Benin" "Botswana" ...
+ $ gdpPercap_1952: num  2449 3521 1063 851 543 ...
+ $ gdpPercap_1957: num  3014 3828 960 918 617 ...
+ $ gdpPercap_1962: num  2551 4269 949 984 723 ...
+ $ gdpPercap_1967: num  3247 5523 1036 1215 795 ...
+ $ gdpPercap_1972: num  4183 5473 1086 2264 855 ...
+ $ gdpPercap_1977: num  4910 3009 1029 3215 743 ...
+ $ gdpPercap_1982: num  5745 2757 1278 4551 807 ...
+ $ gdpPercap_1987: num  5681 2430 1226 6206 912 ...
+ $ gdpPercap_1992: num  5023 2628 1191 7954 932 ...
+ $ gdpPercap_1997: num  4797 2277 1233 8647 946 ...
+ $ gdpPercap_2002: num  5288 2773 1373 11004 1038 ...
+ $ gdpPercap_2007: num  6223 4797 1441 12570 1217 ...
+ $ lifeExp_1952  : num  43.1 30 38.2 47.6 32 ...
+ $ lifeExp_1957  : num  45.7 32 40.4 49.6 34.9 ...
+ $ lifeExp_1962  : num  48.3 34 42.6 51.5 37.8 ...
+ $ lifeExp_1967  : num  51.4 36 44.9 53.3 40.7 ...
+ $ lifeExp_1972  : num  54.5 37.9 47 56 43.6 ...
+ $ lifeExp_1977  : num  58 39.5 49.2 59.3 46.1 ...
+ $ lifeExp_1982  : num  61.4 39.9 50.9 61.5 48.1 ...
+ $ lifeExp_1987  : num  65.8 39.9 52.3 63.6 49.6 ...
+ $ lifeExp_1992  : num  67.7 40.6 53.9 62.7 50.3 ...
+ $ lifeExp_1997  : num  69.2 41 54.8 52.6 50.3 ...
+ $ lifeExp_2002  : num  71 41 54.4 46.6 50.6 ...
+ $ lifeExp_2007  : num  72.3 42.7 56.7 50.7 52.3 ...
+ $ pop_1952      : num  9279525 4232095 1738315 442308 4469979 ...
+ $ pop_1957      : num  10270856 4561361 1925173 474639 4713416 ...
+ $ pop_1962      : num  11000948 4826015 2151895 512764 4919632 ...
+ $ pop_1967      : num  12760499 5247469 2427334 553541 5127935 ...
+ $ pop_1972      : num  14760787 5894858 2761407 619351 5433886 ...
+ $ pop_1977      : num  17152804 6162675 3168267 781472 5889574 ...
+ $ pop_1982      : num  20033753 7016384 3641603 970347 6634596 ...
+ $ pop_1987      : num  23254956 7874230 4243788 1151184 7586551 ...
+ $ pop_1992      : num  26298373 8735988 4981671 1342614 8878303 ...
+ $ pop_1997      : num  29072015 9875024 6066080 1536536 10352843 ...
+ $ pop_2002      : num  31287142 10866106 7026113 1630347 12251209 ...
+ $ pop_2007      : num  33333216 12420476 8078314 1639131 14326203 ...
+
+~~~
+
+
+
+~~~{.r}
+identical(gap_wide,gap_wide_betterID)
+~~~
+
+
+
+~~~{.output}
+[1] FALSE
+
+~~~
+
+There and back again!
+
+> #### Solution to Challenge 1 {.challenge}
+>
+> The original gapminder data.frame is in an intermediate format. It is not purely long since it had multiple observation variables ()
+>
+>
+
+> #### Solution to Challenge 2 {.challenge}
+>
+>~~~{.r}
+>gap_long %>% group_by(continent,obs_type) %>%
+>    summarize(means=mean(obs_values))
+>~~~
+>
+>
+>
+>~~~{.output}
+>Source: local data frame [15 x 3]
+>Groups: continent
+>
+>   continent  obs_type        means
+>1     Africa gdpPercap 2.193755e+03
+>2     Africa   lifeExp 4.886533e+01
+>3     Africa       pop 9.916003e+06
+>4   Americas gdpPercap 7.136110e+03
+>5   Americas   lifeExp 6.465874e+01
+>6   Americas       pop 2.450479e+07
+>7       Asia gdpPercap 7.902150e+03
+>8       Asia   lifeExp 6.006490e+01
+>9       Asia       pop 7.703872e+07
+>10    Europe gdpPercap 1.446948e+04
+>11    Europe   lifeExp 7.190369e+01
+>12    Europe       pop 1.716976e+07
+>13   Oceania gdpPercap 1.862161e+04
+>14   Oceania   lifeExp 7.432621e+01
+>15   Oceania       pop 8.874672e+06
+>
+>~~~
+
+> #### Solution to Challenge 3 {.challenge}
+>
+>~~~{.r}
+>gap_ludicrously_wide <- gap_long %>% 
+>    unite(var_names,obs_type,year,country,sep="_") %>%
+>    spread(var_names,obs_values)
+>~~~
+
+#### Other great resources
+[Data Wrangling Cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
+[Introduction to tidyr](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html)	 
+
+
+## Simple Stats
+
+### anova
+
+### lm
+
+## Best practices for writing nice code
+
+#### Make code readable
+
+The most important part of writing code is making it readable and understandable.
+You want someone else to be able to pick up your code and be able to understand
+what it does: more often than not this someone will be you 6 months down the line,
+who will otherwise be cursing past-self.
+
+#### Documentation: tell us what and why, not how
+
+When you first start out, your comments will often describe what a command does,
+since you're still learning yourself and it can help to clarify concepts and
+remind you later. However, these comments aren't particularly useful later on
+when you don't remember what problem your code is trying to solve. Try to also
+include comments that tell you *why* you're solving a problem, and *what* problem
+that is. The *how* can come after that: it's an implementation detail you ideally
+shouldn't have to worry about.
+
+#### Keep your code modular
+
+Our recommendation is that you should separate your functions from your analysis
+scripts, and store them in a separate file that you `source` when you open the R
+session in your project. This approach is nice because it leaves you with an
+uncluttered analysis script, and a repository of useful functions that can be
+loaded into any analysis script in your project. It also lets you group related
+functions together easily.
+
+#### Break down problem into bite size pieces
+
+When you first start out, problem solving and function writing can be daunting
+tasks, and hard to separate from code inexperience. Try to break down your
+problem into digestible chunks and worry about the implementation details later:
+keep breaking down the problem into smaller and smaller functions until you
+reach a point where you can code a solution, and build back up from there.
+
+#### Know that your code is doing the right thing
+
+Make sure to test your functions!
+
+#### Don't repeat yourself
+
+Functions enable easy reuse within a project. If you see blocks of similar
+lines of code through your project, those are usually candidates for being
+moved into functions.
+
+If your calculations are performed through a series of functions, then the
+project becomes more modular and easier to change. This is especially the case
+for which a particular input always gives a particular output.
+
+#### Remember to be stylish
+
+Apply consistent style to your code.
+
+
+## Resources for furthering your R knowledge (last section on last day)
