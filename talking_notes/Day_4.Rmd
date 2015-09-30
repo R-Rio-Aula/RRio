@@ -712,3 +712,5 @@ There and back again!
 3.  Use `dplyr` to apply the function over the data frame
 
 4.  Create a plot
+
+5.  Push the script to your Github repository
