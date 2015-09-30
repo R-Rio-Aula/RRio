@@ -1,5 +1,13 @@
 ## Learning R
 
+[R Cookbook](http://www.cookbook-r.com/)
+
+### ggplot
+
+[ggplot documentation](http://docs.ggplot2.org/current/)
+
+[ggplot cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
+
 ## Using Git and Github
 
 ## Writing markdown
