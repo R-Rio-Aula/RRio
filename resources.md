@@ -2,6 +2,10 @@
 
 [R Cookbook](http://www.cookbook-r.com/)
 
+[Data Wrangling Cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
+
+[Introduction to dplyr](https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html)
+
 ### ggplot
 
 [ggplot documentation](http://docs.ggplot2.org/current/)
