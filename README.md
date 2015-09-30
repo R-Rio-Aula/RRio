@@ -5,7 +5,6 @@
 Instructor notes for the R Workshop in Rio
 Based on Software Carpentry
 
-#nice class
 ## Abstract
 
 In this workshop, we will cover basics of using R, git and Github for analysis of collaboration with biological data. R is an open source statistical programming language, which allows users to perform standard as well as customized statistical analyses.  Git is a piece of software for version control, allowing users to document changes made to R code and revert to old versions if necessary.  Github is a website that allows collaboration between several researchers, sharing all the components of a project: data, code, outputs and manuscripts.
