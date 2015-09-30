@@ -10,6 +10,8 @@
 
 ## Using Git and Github
 
+[emoji cheat sheet](http://www.emoji-cheat-sheet.com/)
+
 ## Writing markdown
 
 ## Creating packages
