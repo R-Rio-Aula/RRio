@@ -1,0 +1,40 @@
+---
+title: "R Final Days"
+author: "Alathea + Andrew"
+date: "30 September - 2 October"
+output: html_document
+---
+
+```{r load_gapminder, include=FALSE}
+library(gapminder)
+library(ggplot2)
+```
+
+This is a tentative outline of the remaining sections
+
+## Git / Github [Andrew]
+
+### Explain Git and Github
+
+* Git is a version control software for keeping track of changes made to your documents and allowing you to go to earlier versions of them
+* Git removes the need for scripts labeled `model1`, `model2`, and so on...
+* Github is a website that provides an interface for Git so that you can share and collaborate on projects
+
+Once we have Git working on everyone's computers, we will be able to share the course notes together
+
+### Install Git
+
+### Connect Git to RStudio
+
+http://www.molecularecologist.com/2013/11/using-github-with-r-and-rstudio/
+
+### Create Github accounts
+
+### Create a Github repository
+
+### Load a remote Github repository to the computer
+
+### Push and pull things
+
+### Collaboration? e.g. send pull requests, open issues, etc.
+
