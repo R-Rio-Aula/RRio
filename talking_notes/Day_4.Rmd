@@ -5,7 +5,7 @@ output: html_document
 
 ## Refresh on packages: what they are and how to install them
 
-## dplyr
+## dplyr [Alathea]
 
 Manipulation of dataframes means many things to many researchers, we often select certain observations (rows) or variables (columns), we often group the data by a certain variable(s), or we even calculate summary statistic. We can do these operations using the normal base R operations:
 
@@ -14,33 +14,23 @@ Manipulation of dataframes means many things to many researchers, we often selec
 mean(gapminder[gapminder$continent == "Africa", "gdpPercap"])
 ~~~
 
-
-
 ~~~{.output}
 [1] 2193.755
 
 ~~~
 
-
-
 ~~~{.r}
 mean(gapminder[gapminder$continent == "Americas", "gdpPercap"])
 ~~~
-
-
 
 ~~~{.output}
 [1] 7136.11
 
 ~~~
 
-
-
 ~~~{.r}
 mean(gapminder[gapminder$continent == "Asia", "gdpPercap"])
 ~~~
-
-
 
 ~~~{.output}
 [1] 7902.15
@@ -205,7 +195,7 @@ gdp_pop_bycontinents_byyear <- gapminder %>%
 >    arrange(desc(mean_lifeExp))
 >~~~
 
-## tidyr
+## tidyr [Andrew]
 
 Researchers often want to manipulate their data from the 'wide' to the 'long' format, or vice-versa. The 'long' format is where:
 
