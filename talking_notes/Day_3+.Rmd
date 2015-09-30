@@ -1,0 +1,28 @@
+---
+title: "R Final Days"
+author: "Alathea + Andrew"
+date: "30 September - 2 October"
+output: html_document
+---
+
+```{r load_gapminder, include=FALSE}
+library(gapminder)
+library(ggplot2)
+```
+
+## Git / Github
+
+### Explain Git and Github
+
+### Install Git
+
+### Create Github accounts
+
+### Create a Github repository
+
+### Load a remote Github repository to the computer
+
+### Push and pull things
+
+### Collaboration? e.g. send pull requests, open issues, etc.
+
