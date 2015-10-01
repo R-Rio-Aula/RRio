@@ -705,12 +705,48 @@ There and back again!
 
 ## Review exercise
 
-1.  Clean up some data
+####  Clean up some data
 
-2.  Write a function to perform a calculation on some data
+To get the data for our Review exercise, we need to update your copies of the course repository.  
 
-3.  Use `dplyr` to apply the function over the data frame
+Alternatively, we teachers will put it into the course organization in a separate repo.
 
-4.  Create a plot
+OR here is an idea! we use a small for loop to create a folder for every student in the repo, and everyone works inside their own folder.
 
-5.  Push the script to your Github repository
+#### Organization of project:
+
+Every directory should be organized so that somebody could reproduce your work. Here are some suggestions:
+
+* `README.md` to explain what your project is about
+* `/raw-data` for the actual data
+* `/cleaned_data` for processed versions of the dataset.
+* `/figures` for figures
+
+
+###   Write a function to perform a calculation on some data
+
+**easy example** re-use our coefficient of variation function to calculate the coefficient of variation for every species in each year.
+
+Other possibilites:
+* scale the species weights into z-scores
+* do animals get heaver over a season? write a function to extract the R-squared from a linear model of weight~time
+
+
+Helpful dicas:
+
+* Organize your functions into a separate file and read it in with `source()`. 
+* comment your functions very well
+
+###  Use `dplyr` to apply the function over the data frame
+
+This will require the use of `do()`. Remember to reference the grouped data that is passed in with `.$`
+
+###  Create a plot
+
+Your plot can be of any kind you like (remember to consult the GGplot documentation)
+
+###  Push the script to your Github repository
+
+When you are done (or even as you are working!) Push your changes to the origin repository on github
+
+Because we will all be working with a clone of the same master repository, we will be able to see each other's work in this way!
